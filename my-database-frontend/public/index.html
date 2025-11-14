@@ -1,32 +1,115 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>My Database Frontend</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Side Navigation Web Page</title>
     <style>
-        body { font-family: Arial, sans-serif; padding: 20px; }
-        .item { border: 1px solid #ddd; padding: 10px; margin: 10px 0; }
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            display: flex;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 220px;
+            background-color: #333;
+            height: 100vh;
+            padding-top: 20px;
+            position: fixed;
+            left: 0;
+            top: 0;
+        }
+
+        .sidebar a {
+            display: block;
+            color: white;
+            padding: 14px 20px;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .sidebar a:hover {
+            background-color: #575757;
+        }
+
+        .active-tab {
+            background-color: #575757 !important;
+        }
+
+        /* Main content area */
+        .main-content {
+            margin-left: 220px;
+            padding: 20px;
+            width: calc(100% - 220px);
+        }
+
+        .content {
+            display: none;
+        }
+
+        .show {
+            display: block;
+        }
     </style>
 </head>
 <body>
-    <h1>My Database Items</h1>
-    <div id="items">Loading...</div>
+
+    <div class="sidebar">
+        <a onclick="openTab('home', this)" class="active-tab">Home</a>
+        <a onclick="openTab('customer', this)">Customer</a>
+        <a onclick="openTab('product', this)">Product</a>
+        <a onclick="openTab('category', this)">Category</a>
+        <a onclick="openTab('sales', this)">Sales</a>
+        <a onclick="openTab('vendor', this)">Vendor</a>
+    </div>
+
+    <div class="main-content">
+        <div id="home" class="content show">
+            <h2>Home Page</h2>
+            <p>Welcome to the Retail Management System.</p>
+        </div>
+
+        <div id="customer" class="content">
+            <h2>Customer Records</h2>
+            <div id="customer_record"> Manage your customers here. </div>
+        </div>
+
+        <div id="product" class="content">
+            <h2>Product Page</h2>
+            <div id="product_record"> View and manage products. </div>
+        </div>
+
+        <div id="category" class="content">
+            <h2>Category Page</h2>
+            <div id="category_record"> Product category details. </div>
+        </div>
+
+        <div id="sales" class="content">
+            <h2>Sales Page</h2>
+            <div id="sales_record"> View and record sales. </div>
+        </div>
+
+        <div id="vendor" class="content">
+            <h2>Vendor Page</h2>
+            <div id="vendor_record"> View and manage vendors. </div>
+        </div>
+    </div>
 
     <script>
-        // Fetch data from your API
-        fetch('/.netlify/functions/get-items')
-            .then(response => response.json())
-            .then(data => {
-                const container = document.getElementById('items');
-                container.innerHTML = data.map(item =>
-                    `<div class="item">${JSON.stringify(item)}</div>`
-                ).join('');
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                document.getElementById('items').innerHTML =
-                    'Error loading data';
-            });
+        function openTab(tabId, element) {
+            let contents = document.querySelectorAll('.content');
+            let tabs = document.querySelectorAll('.sidebar a');
+
+            contents.forEach(c => c.classList.remove('show'));
+            tabs.forEach(t => t.classList.remove('active-tab'));
+
+            document.getElementById(tabId).classList.add('show');
+            element.classList.add('active-tab');
+        }
     </script>
+
+
 </body>
 </html>
