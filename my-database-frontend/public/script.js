@@ -12,7 +12,7 @@ function openTab(tabId, element) {
 
 // Fetch Customer data
 function loadCustomerData() {
-    fetch('/.netlify/functions/get-items')
+    fetch('/.netlify/functions/customer-get-items')
         .then(response => response.json())
         .then(data => {
             createTableFromJSON(data, "customer_record")
@@ -25,13 +25,10 @@ function loadCustomerData() {
 }
 
 function loadSalesData() {
-    fetch('/.netlify/functions/get-items')
+    fetch('/.netlify/functions/sales-get-items')
         .then(response => response.json())
         .then(data => {
-            const container = document.getElementById('sales_record');
-            container.innerHTML = data.map(item =>
-                `<div class="item">${JSON.stringify(item)}</div>`
-            ).join('');
+            createTableFromJSON(data, "sales_record")
         })
         .catch(error => {
             console.error('Error:', error);
@@ -41,13 +38,10 @@ function loadSalesData() {
 }
 
 function loadProductData() {
-    fetch('/.netlify/functions/get-items')
+    fetch('/.netlify/functions/product-get-items')
         .then(response => response.json())
         .then(data => {
-            const container = document.getElementById('product_record');
-            container.innerHTML = data.map(item =>
-                `<div class="item">${JSON.stringify(item)}</div>`
-            ).join('');
+            createTableFromJSON(data, "product_record")
         })
         .catch(error => {
             console.error('Error:', error);
@@ -57,13 +51,10 @@ function loadProductData() {
 }
 
 function loadCategoryData() {
-    fetch('/.netlify/functions/get-items')
+    fetch('/.netlify/functions/category-get-items')
         .then(response => response.json())
         .then(data => {
-            const container = document.getElementById('category_record');
-            container.innerHTML = data.map(item =>
-                `<div class="item">${JSON.stringify(item)}</div>`
-            ).join('');
+            createTableFromJSON(data, "category_record")
         })
         .catch(error => {
             console.error('Error:', error);
@@ -72,18 +63,15 @@ function loadCategoryData() {
         });
 }
 
-function loadVendorData() {
-    fetch('/.netlify/functions/get-items')
+function loadSuppliersData() {
+    fetch('/.netlify/functions/suppliers-get-items')
         .then(response => response.json())
         .then(data => {
-            const container = document.getElementById('vendor_record');
-            container.innerHTML = data.map(item =>
-                `<div class="item">${JSON.stringify(item)}</div>`
-            ).join('');
+            createTableFromJSON(data, "suppliers_record")
         })
         .catch(error => {
             console.error('Error:', error);
-            document.getElementById('vendor_record').innerHTML =
+            document.getElementById('suppliers_record').innerHTML =
                 '<p style="color:red">Error loading data</p>';
         });
 }
@@ -94,7 +82,7 @@ document.addEventListener("DOMContentLoaded", function () {
     loadCategoryData();
     loadProductData();
     loadSalesData();
-    loadVendorData();
+    loadSuppliersData();
 });
 
 
