@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>My Database Frontend</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .item { border: 1px solid #ddd; padding: 10px; margin: 10px 0; }
+    </style>
+</head>
+<body>
+    <h1>My Database Items</h1>
+    <div id="items">Loading...</div>
+
+    <script>
+        // Fetch data from your API
+        fetch('/.netlify/functions/get-items')
+            .then(response => response.json())
+            .then(data => {
+                const container = document.getElementById('items');
+                container.innerHTML = data.map(item =>
+                    `<div class="item">${JSON.stringify(item)}</div>`
+                ).join('');
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById('items').innerHTML =
+                    'Error loading data';
+            });
+    </script>
+</body>
+</html>

@@ -5,4 +5,4 @@
 [dev]
   functions = "netlify/functions"
   publish = "public"
-  port = 8888
+  port = 8008
