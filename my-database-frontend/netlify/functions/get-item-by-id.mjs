@@ -17,7 +17,7 @@ export default async (req, context) => {
 
     // Parameterized query (prevents SQL injection)
     const result = await sql(
-      'SELECT * FROM your_table_name WHERE id = $1',
+      'SELECT * FROM customers WHERE id = $1',
       [id]
     );
 
