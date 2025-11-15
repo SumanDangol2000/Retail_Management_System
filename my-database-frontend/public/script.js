@@ -1,14 +1,4 @@
-// Handle tab switching
-function openTab(tabId, element) {
-    let contents = document.querySelectorAll('.content');
-    let tabs = document.querySelectorAll('.sidebar a');
 
-    contents.forEach(c => c.classList.remove('show'));
-    tabs.forEach(t => t.classList.remove('active-tab'));
-
-    document.getElementById(tabId).classList.add('show');
-    element.classList.add('active-tab');
-}
 
 // Fetch Customer data
 function loadCustomerData() {
@@ -50,18 +40,6 @@ function loadProductData() {
         });
 }
 
-function loadCategoryData() {
-    fetch('/.netlify/functions/category-get-items')
-        .then(response => response.json())
-        .then(data => {
-            createTableFromJSON(data, "category_record")
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            document.getElementById('category_record').innerHTML =
-                '<p style="color:red">Error loading data</p>';
-        });
-}
 
 function loadSuppliersData() {
     fetch('/.netlify/functions/suppliers-get-items')
@@ -76,13 +54,26 @@ function loadSuppliersData() {
         });
 }
 
+export function loadCategoryData() {
+    fetch('/.netlify/functions/category-get-items')
+        .then(response => response.json())
+        .then(data => {
+            createTableFromJSON(data, "category_record")
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            document.getElementById('category_record').innerHTML =
+                '<p style="color:red">Error loading data</p>';
+        });
+}
+
 // Call automatically when page loads
 document.addEventListener("DOMContentLoaded", function () {
     loadCustomerData();
-    loadCategoryData();
     loadProductData();
     loadSalesData();
     loadSuppliersData();
+    loadCategoryData();
 });
 
 
@@ -119,6 +110,14 @@ function createTableFromJSON(jsonData, containerId) {
         headerRow.appendChild(th);
     });
 
+    // Add "Actions" header
+    const actionTh = document.createElement("th");
+    actionTh.innerText = "Actions";
+    actionTh.style.border = "1px solid black";
+    actionTh.style.padding = "8px";
+    actionTh.style.background = "#f0f0f0";
+    headerRow.appendChild(actionTh);
+
     thead.appendChild(headerRow);
     table.appendChild(thead);
 
@@ -136,6 +135,36 @@ function createTableFromJSON(jsonData, containerId) {
             row.appendChild(td);
         });
 
+        // Create actions cell
+        const actionTd = document.createElement("td");
+        actionTd.style.border = "1px solid black";
+        actionTd.style.padding = "8px";
+
+        // Edit button
+        const editBtn = document.createElement("button");
+        editBtn.innerText = "Edit";
+        editBtn.style.marginRight = "5px";
+        editBtn.addEventListener("click", () => {
+            // Call your edit function here
+            console.log("Edit clicked for id:", item.id);
+            // Example: editCategory(item);
+        });
+
+        // Delete button
+        const deleteBtn = document.createElement("button");
+        deleteBtn.innerText = "Delete";
+        deleteBtn.style.backgroundColor = "#dc3545";
+        deleteBtn.style.color = "white";
+        deleteBtn.addEventListener("click", () => {
+            // Call your delete function here
+            console.log("Delete clicked for id:", item.id);
+            // Example: deleteCategory(item.id);
+        });
+
+        actionTd.appendChild(editBtn);
+        actionTd.appendChild(deleteBtn);
+        row.appendChild(actionTd);
+
         tbody.appendChild(row);
     });
 
@@ -144,4 +173,53 @@ function createTableFromJSON(jsonData, containerId) {
     // Add table to container
     container.appendChild(table);
 }
+
+
+export function showMessage(msg, type = "info", duration = 3000) {
+    const container = document.getElementById("globalMessage");
+
+    // Create a new message element
+    const messageDiv = document.createElement("div");
+    messageDiv.textContent = msg;
+
+    // Basic styles
+    messageDiv.style.padding = "10px 20px";
+    messageDiv.style.marginBottom = "10px";
+    messageDiv.style.borderRadius = "5px";
+    messageDiv.style.color = "white";
+    messageDiv.style.fontWeight = "bold";
+    messageDiv.style.boxShadow = "0 2px 6px rgba(0,0,0,0.2)";
+    messageDiv.style.opacity = "0";
+    messageDiv.style.transition = "opacity 0.3s ease";
+
+    // Set background color based on type
+    switch (type.toLowerCase()) {
+        case "success":
+            messageDiv.style.backgroundColor = "#28a745"; // green
+            break;
+        case "error":
+            messageDiv.style.backgroundColor = "#dc3545"; // red
+            break;
+        case "info":
+        default:
+            messageDiv.style.backgroundColor = "#17a2b8"; // blue
+            break;
+    }
+
+    // Append to container
+    container.appendChild(messageDiv);
+
+    // Fade in
+    requestAnimationFrame(() => {
+        messageDiv.style.opacity = "1";
+    });
+
+    // Remove after duration
+    setTimeout(() => {
+        // Fade out
+        messageDiv.style.opacity = "0";
+        messageDiv.addEventListener("transitionend", () => messageDiv.remove());
+    }, duration);
+}
+
 

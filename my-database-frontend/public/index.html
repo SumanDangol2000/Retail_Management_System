@@ -1,103 +1,103 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+  <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Side Navigation Web Page</title>
-    <style>
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            display: flex;
-        }
-
-        /* Sidebar */
-        .sidebar {
-            width: 220px;
-            background-color: #333;
-            height: 100vh;
-            padding-top: 20px;
-            position: fixed;
-            left: 0;
-            top: 0;
-        }
-
-        .sidebar a {
-            display: block;
-            color: white;
-            padding: 14px 20px;
-            text-decoration: none;
-            cursor: pointer;
-        }
-
-        .sidebar a:hover {
-            background-color: #575757;
-        }
-
-        .active-tab {
-            background-color: #575757 !important;
-        }
-
-        /* Main content area */
-        .main-content {
-            margin-left: 220px;
-            padding: 20px;
-            width: calc(100% - 220px);
-        }
-
-        .content {
-            display: none;
-        }
-
-        .show {
-            display: block;
-        }
-    </style>
-</head>
-<body>
+    <title>Retail Management System</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <!-- Global message container -->
+    <div
+      id="globalMessage"
+      style="position: fixed; top: 20px; right: 20px; z-index: 9999"
+    ></div>
 
     <div class="sidebar">
-        <a onclick="openTab('home', this)" class="active-tab">Home</a>
-        <a onclick="openTab('customer', this)">Customer</a>
-        <a onclick="openTab('product', this)">Product</a>
-        <a onclick="openTab('category', this)">Category</a>
-        <a onclick="openTab('sales', this)">Sales</a>
-        <a onclick="openTab('suppliers', this)">Suppliers</a>
+      <a onclick="openTab('home', this)" class="active-tab">Home</a>
+      <a onclick="openTab('customer', this)">Customer</a>
+      <a onclick="openTab('product', this)">Product</a>
+      <a onclick="openTab('category', this)">Category</a>
+      <a onclick="openTab('sales', this)">Sales</a>
+      <a onclick="openTab('suppliers', this)">Suppliers</a>
     </div>
 
     <div class="main-content">
-        <div id="home" class="content show">
-            <h2>Home Page</h2>
-            <p>Welcome to the Retail Management System.</p>
-        </div>
+      <div id="home" class="content show">
+        <h2>Home Page</h2>
+        <p>Welcome to the Retail Management System.</p>
+      </div>
 
-        <div id="customer" class="content">
-            <h2>Customer Records</h2>
-            <div id="customer_record"> Manage your customers here. </div>
-        </div>
+      <div id="customer" class="content">
+        <h2>Customer Records</h2>
+        <div id="customer_record">Manage your customers here.</div>
+      </div>
 
-        <div id="product" class="content">
-            <h2>Product Page</h2>
-            <div id="product_record"> View and manage products. </div>
-        </div>
+      <div id="product" class="content">
+        <h2>Product Page</h2>
+        <div id="product_record">View and manage products.</div>
+      </div>
 
-        <div id="category" class="content">
-            <h2>Category Page</h2>
-            <div id="category_record"> Product category details. </div>
-        </div>
+      <div id="category" class="content">
+        <h2>Category Page</h2>
+        <form id="categoryForm">
+          <label style="font-weight: bold">Category Name:</label><br />
+          <input type="text" id="category_name" required /><br />
 
-        <div id="sales" class="content">
-            <h2>Sales Page</h2>
-            <div id="sales_record"> View and record sales. </div>
-        </div>
+          <label style="font-weight: bold">Description:</label><br />
+          <textarea id="description" rows="3"></textarea><br />
 
-        <div id="suppliers" class="content">
-            <h2>Vendor Page</h2>
-            <div id="suppliers_record"> View and manage vendors. </div>
-        </div>
+          <button type="submit">Add Category</button>
+        </form>
+
+        <hr
+          style="margin: 20px 0; border: 0; height: 1px; background-color: #ddd"
+        />
+
+        <h2>Category Records</h2>
+        <div id="category_record">Product category details.</div>
+      </div>
+
+      <div id="sales" class="content">
+        <h2>Sales Page</h2>
+        <div id="sales_record">View and record sales.</div>
+      </div>
+
+      <div id="suppliers" class="content">
+        <h2>Vendor Page</h2>
+        <div id="suppliers_record">View and manage vendors.</div>
+      </div>
     </div>
- 
-    <script src="script.js" ></script>
 
-</body>
+    <script>
+      // Handle tab switching
+      function openTab(tabId, element) {
+        let contents = document.querySelectorAll(".content");
+        let tabs = document.querySelectorAll(".sidebar a");
+
+        contents.forEach((c) => c.classList.remove("show"));
+        tabs.forEach((t) => t.classList.remove("active-tab"));
+
+        document.getElementById(tabId).classList.add("show");
+        element.classList.add("active-tab");
+
+        // Save current tab
+        localStorage.setItem("activeTab", tabId);
+      }
+
+      // On page load, open saved tab
+      window.addEventListener("load", () => {
+        const savedTab = localStorage.getItem("activeTab");
+        if (savedTab) {
+          const tabElement = Array.from(
+            document.querySelectorAll(".sidebar a")
+          ).find((el) => el.getAttribute("onclick")?.includes(savedTab));
+          if (tabElement) openTab(savedTab, tabElement);
+        }
+      });
+    </script>
+
+    <script type="module" src="script.js"></script>
+    <script type="module" src="category-script.js"></script>
+  </body>
 </html>

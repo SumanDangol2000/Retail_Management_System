@@ -1,40 +1,43 @@
-import { neon } from '@neondatabase/serverless';
+import { neon } from "@neondatabase/serverless";
 
 export default async (req, context) => {
   try {
-    // Only accept POST requests
-    if (req.method !== 'POST') {
-      return new Response('Method not allowed', { status: 405 });
+    // Only allow POST
+    if (req.method !== "POST") {
+      return new Response(JSON.stringify({ error: "Method not allowed" }), {
+        status: 405,
+        headers: { "Content-Type": "application/json" },
+      });
     }
 
-    // Parse request body
-    const body = await req.json();
-    const { column1, column2, column3 } = body;
+    // Parse JSON body
+    const { category_name, description } = await req.json();
 
-    // Validate input
-    if (!column1 || !column2) {
+    // Validate required field
+    if (!category_name || category_name.trim() === "") {
       return new Response(
-        JSON.stringify({ error: 'Required fields missing' }),
-        { status: 400, headers: { 'Content-Type': 'application/json' } }
+        JSON.stringify({ error: "Category name is required" }),
+        { status: 400, headers: { "Content-Type": "application/json" } }
       );
     }
 
     const sql = neon(process.env.DATABASE_URL);
 
-    // Insert with parameterized query
-    const result = await sql(
-      'INSERT INTO your_table (column1, column2, column3) VALUES ($1, $2, $3) RETURNING *',
-      [column1, column2, column3]
-    );
+    // Insert category
+    const result = await sql`
+    INSERT INTO Categories (category_name, description) 
+    VALUES (${category_name}, ${description})
+    RETURNING *;
+  `;
 
     return new Response(JSON.stringify(result[0]), {
       status: 201,
-      headers: { 'Content-Type': 'application/json' }
+      headers: { "Content-Type": "application/json" },
     });
   } catch (error) {
     return new Response(JSON.stringify({ error: error.message }), {
       status: 500,
-      headers: { 'Content-Type': 'application/json' }
+      headers: { "Content-Type": "application/json" },
     });
   }
 };
