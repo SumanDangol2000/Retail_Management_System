@@ -18,9 +18,9 @@ export default async (req, context) => {
      const searchValue = `%${keyword}%`;
 
     // Parameterized query (prevents SQL injection)
-    const result = await sql`SELECT * FROM categories WHERE category_name LIKE ${searchValue};`;
+    const result = await sql`SELECT * FROM Categories WHERE category_name ILIKE ${searchValue};`;
 
-    return new Response(JSON.stringify(result[0] || {}), {
+    return new Response(JSON.stringify(result || {}), {
       status: result.length > 0 ? 200 : 404,
       headers: { 'Content-Type': 'application/json' }
     });

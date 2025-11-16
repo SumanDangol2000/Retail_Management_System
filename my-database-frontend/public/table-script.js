@@ -111,7 +111,7 @@ export async function handleEdit(tableName, id) {
     }
 
     try {
-        const response = await fetch(`/.netlify/functions/${tableName}-update-item-by-id?id=${id}`, {
+        const response = await fetch(`/.netlify/functions/${tableName}-update-item-by-id?id=${encodeURIComponent(id)}`, {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json"
@@ -155,7 +155,7 @@ export async function handleDelete(tableName, id) {
     }
 
     try {
-        const response = await fetch(`/.netlify/functions/${tableName}-delete-item-by-id?id=${id}`, {
+        const response = await fetch(`/.netlify/functions/${tableName}-delete-item-by-id?id=${encodeURIComponent(id)}`, {
             method: "DELETE"
         });
 
