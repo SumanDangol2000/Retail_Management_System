@@ -1,4 +1,4 @@
-import { loadCategoryData, showMessage } from "./script.js";
+import { loadData, showMessage } from "./script.js";
 
 document.getElementById("categoryForm").addEventListener("submit", (e) => {
     e.preventDefault();
@@ -17,21 +17,17 @@ document.getElementById("categoryForm").addEventListener("submit", (e) => {
         body: JSON.stringify({ category_name, description })
     })
         .then(async response => {
-            const data = await response.json();
 
             // Handle non-201 responses
             if (!response.ok) {
-                throw new Error(data.error || "Failed to create category");
+                showMessage("Failed to create category");
+                return;
             }
 
-            return data;
-        })
-        .then(data => {
             showMessage("Record added successfully!", "success");
-            loadCategoryData();
+            loadData('/.netlify/functions/category-get-items', 'category_record', 'category');
 
-            // Optionally reset form:
-            // document.getElementById("categoryForm").reset();
+            // return data;
         })
         .catch(err => {
             console.error("Error:", err);

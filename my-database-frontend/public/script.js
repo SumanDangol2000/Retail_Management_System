@@ -1,7 +1,7 @@
 import { createTableFromJSON } from "./table-script.js";
 
 
-function loadData(endpoint, containerId, tableName) {
+export function loadData(endpoint, containerId, tableName) {
     fetch(endpoint)
         .then(resp => resp.json())
         .then(data => createTableFromJSON(data, containerId, tableName))

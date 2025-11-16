@@ -1,4 +1,4 @@
-import { showMessage } from "./script.js";
+import { loadData, showMessage } from "./script.js";
 
 export function createTableFromJSON(jsonData, containerId, tableName, idField = null) {
     // Convert single object to array
@@ -93,26 +93,61 @@ export function createTableFromJSON(jsonData, containerId, tableName, idField = 
 }
 
 
-export async function handleEdit(tableName, id, payload) {
+export async function handleEdit(tableName, id) {
+    // Option 1: Redirect to an edit page
+    // window.location.href = `/edit.html?table=${tableName}&id=${id}`;
+    // return;
+
+    // Option 2: Simple prompt editing (temporary solution)
+    const newValue = prompt(`Enter updated values for ${tableName} (JSON format):`);
+    if (!newValue) return;
+
+    let parsedData;
+    try {
+        parsedData = JSON.parse(newValue);
+    } catch (e) {
+        showMessage("Invalid JSON format", "error");
+        return;
+    }
+
     try {
         const response = await fetch(`/.netlify/functions/${tableName}-update-item-by-id?id=${id}`, {
             method: "PUT",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(payload) // new updated data
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(parsedData)
         });
+
+        if (!response.ok) {
+            if (response.status === 404) {
+                showMessage(`Record not found for ID ${id}`, "error");
+            } else if (response.status === 400) {
+                showMessage("Invalid update data", "error");
+            } else if (response.status === 405) {
+                showMessage("Method not allowed. PUT required.", "error");
+            } else {
+                showMessage("Server error during update", "error");
+            }
+
+            console.error("Edit failed:", response.status);
+            return;
+        }
 
         const result = await response.json();
 
-        console.log("Edit success:", result);
         showMessage(`Updated ${tableName} record with ID = ${id}`, "success");
+        console.log("Edit success:", result);
 
-        // return result;
+        // OPTIONAL: Reload data
+        loadData(`/.netlify/functions/${tableName}-get-items`, `${tableName}_record`, tableName);
 
     } catch (error) {
         console.error("Edit error:", error);
-        showMessage("Error updating record", "error");
+        showMessage("Network error while updating record", "error");
     }
 }
+
 
 export async function handleDelete(tableName, id) {
     if (!confirm(`Are you sure you want to delete ID ${id} from ${tableName}?`)) {
@@ -126,15 +161,37 @@ export async function handleDelete(tableName, id) {
 
         const result = await response.json();
 
-        console.log("Delete success:", result);
-        showMessage(`Deleted ${tableName} record with ID = ${id}`);
+        // Handle NON-200 responses
+        if (!response.ok) {
+            if (response.status === 404) {
+                showMessage(`Record not found for ID ${id} in ${tableName}`, "error");
+            } else if (response.status === 400) {
+                showMessage("Invalid ID or missing parameter", "error");
+            } else if (response.status === 405) {
+                showMessage("Method not allowed. DELETE required.", "error");
+            } else {
+                showMessage("Server error. Try again later.", "error");
+            }
 
-        // return result;
+            console.error("Delete failed:", response.status);
+            return;
+        }
+
+        // // Parse the JSON from backend
+        // const result = await response.json();
+
+        // SUCCESS CASE (HTTP 200)
+        showMessage(`Deleted ${tableName} record with ID = ${id}`, "success");
+        console.log("Delete success:", result);
+
+        // OPTIONAL: auto-refresh data
+        loadData(`/.netlify/functions/${tableName}-get-items`, `${tableName}_record`, tableName);
 
     } catch (error) {
         console.error("Delete error:", error);
-        showMessage("Error deleting record", "error");
+        showMessage("Network error while deleting record", "error");
     }
 }
+
 
 
