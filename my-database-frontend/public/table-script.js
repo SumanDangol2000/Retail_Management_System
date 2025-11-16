@@ -139,7 +139,7 @@ export async function handleEdit(tableName, id) {
         showMessage(`Updated ${tableName} record with ID = ${id}`, "success");
         console.log("Edit success:", result);
 
-        // OPTIONAL: Reload data
+        // Reload data
         loadData(`/.netlify/functions/${tableName}-get-items`, `${tableName}_record`, tableName);
 
     } catch (error) {
@@ -159,8 +159,6 @@ export async function handleDelete(tableName, id) {
             method: "DELETE"
         });
 
-        const result = await response.json();
-
         // Handle NON-200 responses
         if (!response.ok) {
             if (response.status === 404) {
@@ -178,13 +176,13 @@ export async function handleDelete(tableName, id) {
         }
 
         // // Parse the JSON from backend
-        // const result = await response.json();
+        const result = await response.json();
 
         // SUCCESS CASE (HTTP 200)
         showMessage(`Deleted ${tableName} record with ID = ${id}`, "success");
         console.log("Delete success:", result);
 
-        // OPTIONAL: auto-refresh data
+        //Refresh data
         loadData(`/.netlify/functions/${tableName}-get-items`, `${tableName}_record`, tableName);
 
     } catch (error) {
