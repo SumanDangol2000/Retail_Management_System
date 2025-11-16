@@ -1,3 +1,5 @@
+import { showMessage } from "./script.js";
+
 export function createTableFromJSON(jsonData, containerId, tableName, idField = null) {
     // Convert single object to array
     if (!Array.isArray(jsonData)) {
@@ -90,31 +92,49 @@ export function createTableFromJSON(jsonData, containerId, tableName, idField = 
     container.appendChild(table);
 }
 
-function handleEdit(tableName, id) {
-    console.log("Edit clicked:", tableName, id);
-    alert(`Edit requested for table: ${tableName}, ID: ${id}`);
-    
-    switch(tableName){
-        case "customer":
-            
-        case "category":
-        case "product":
-        case "sales":
-        case "suppliers":
-        
+
+export async function handleEdit(tableName, id, payload) {
+    try {
+        const response = await fetch(`/.netlify/functions/${tableName}-update-item-by-id?id=${id}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload) // new updated data
+        });
+
+        const result = await response.json();
+
+        console.log("Edit success:", result);
+        showMessage(`Updated ${tableName} record with ID = ${id}`, "success");
+
+        // return result;
+
+    } catch (error) {
+        console.error("Edit error:", error);
+        showMessage("Error updating record", "error");
+    }
+}
+
+export async function handleDelete(tableName, id) {
+    if (!confirm(`Are you sure you want to delete ID ${id} from ${tableName}?`)) {
+        return;
     }
 
-    // Here you can redirect or open form
-    // window.location.href = `/edit.html?table=${tableName}&id=${id}`;
+    try {
+        const response = await fetch(`/.netlify/functions/${tableName}-delete-item-by-id?id=${id}`, {
+            method: "DELETE"
+        });
+
+        const result = await response.json();
+
+        console.log("Delete success:", result);
+        showMessage(`Deleted ${tableName} record with ID = ${id}`);
+
+        // return result;
+
+    } catch (error) {
+        console.error("Delete error:", error);
+        showMessage("Error deleting record", "error");
+    }
 }
 
-function handleDelete(tableName, id) {
-    console.log("Delete clicked:", tableName, id);
-    alert(`Delete requested for table: ${tableName}, ID: ${id}`);
-
-    // Example: call Netlify function to delete
-    // fetch(`/.netlify/functions/delete-item?table=${tableName}&id=${id}`, { method: "DELETE" })
-    //     .then(res => res.json())
-    //     .then(response => console.log(response));
-}
 
