@@ -1,4 +1,4 @@
-export function createTableFromJSON(jsonData, containerId) {
+export function createTableFromJSON(jsonData, containerId, tableName, idField = null) {
     // Convert single object to array
     if (!Array.isArray(jsonData)) {
         jsonData = [jsonData];
@@ -12,13 +12,19 @@ export function createTableFromJSON(jsonData, containerId) {
         return;
     }
 
-    // Create the table
+    // Automatically detect the primary ID field (any field that ends with "_id")
+    if (!idField) {
+        idField = Object.keys(jsonData[0]).find(key => key.endsWith("_id")) || "id";
+    }
+
+    // Extract headers
+    const headers = Object.keys(jsonData[0]);
+
     const table = document.createElement("table");
     table.style.borderCollapse = "collapse";
     table.style.width = "100%";
 
-    // Extract headers
-    const headers = Object.keys(jsonData[0]);
+    // HEADER
     const thead = document.createElement("thead");
     const headerRow = document.createElement("tr");
 
@@ -31,66 +37,84 @@ export function createTableFromJSON(jsonData, containerId) {
         headerRow.appendChild(th);
     });
 
-    // Add "Actions" header
+    // Action column
     const actionTh = document.createElement("th");
-    actionTh.innerText = "Actions";
+    actionTh.innerText = "Action";
     actionTh.style.border = "1px solid black";
     actionTh.style.padding = "8px";
-    actionTh.style.background = "#f0f0f0";
+    actionTh.style.background = "#ddd";
     headerRow.appendChild(actionTh);
 
     thead.appendChild(headerRow);
     table.appendChild(thead);
 
-    // Create table body
+    // BODY
     const tbody = document.createElement("tbody");
 
-    jsonData.forEach(item => {
-        const row = document.createElement("tr");
+    jsonData.forEach(row => {
+        const tr = document.createElement("tr");
 
         headers.forEach(key => {
             const td = document.createElement("td");
-            td.innerText = item[key];
+            td.innerText = row[key];
             td.style.border = "1px solid black";
             td.style.padding = "8px";
-            row.appendChild(td);
+            tr.appendChild(td);
         });
 
-        // Create actions cell
+        // Action buttons (Edit/Delete)
         const actionTd = document.createElement("td");
         actionTd.style.border = "1px solid black";
         actionTd.style.padding = "8px";
 
-        // Edit button
+        //Edit button
         const editBtn = document.createElement("button");
         editBtn.innerText = "Edit";
         editBtn.style.marginRight = "5px";
-        editBtn.addEventListener("click", () => {
-            // Call your edit function here
-            console.log("Edit clicked for id:", item.id);
-            // Example: editCategory(item);
-        });
+        editBtn.onclick = () => handleEdit(tableName, row[idField]);
 
-        // Delete button
+        //Delete button
         const deleteBtn = document.createElement("button");
         deleteBtn.innerText = "Delete";
         deleteBtn.style.backgroundColor = "#dc3545";
-        deleteBtn.style.color = "white";
-        deleteBtn.addEventListener("click", () => {
-            // Call your delete function here
-            console.log("Delete clicked for id:", item.id);
-            // Example: deleteCategory(item.id);
-        });
+        deleteBtn.onclick = () => handleDelete(tableName, row[idField]);
 
         actionTd.appendChild(editBtn);
         actionTd.appendChild(deleteBtn);
-        row.appendChild(actionTd);
 
-        tbody.appendChild(row);
+        tr.appendChild(actionTd);
+        tbody.appendChild(tr);
     });
 
     table.appendChild(tbody);
-
-    // Add table to container
     container.appendChild(table);
 }
+
+function handleEdit(tableName, id) {
+    console.log("Edit clicked:", tableName, id);
+    alert(`Edit requested for table: ${tableName}, ID: ${id}`);
+    
+    switch(tableName){
+        case "customer":
+            
+        case "category":
+        case "product":
+        case "sales":
+        case "suppliers":
+        
+    }
+
+    // Here you can redirect or open form
+    // window.location.href = `/edit.html?table=${tableName}&id=${id}`;
+}
+
+function handleDelete(tableName, id) {
+    console.log("Delete clicked:", tableName, id);
+    alert(`Delete requested for table: ${tableName}, ID: ${id}`);
+
+    // Example: call Netlify function to delete
+    // fetch(`/.netlify/functions/delete-item?table=${tableName}&id=${id}`, { method: "DELETE" })
+    //     .then(res => res.json())
+    //     .then(response => console.log(response));
+}
+
