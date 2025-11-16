@@ -4,19 +4,21 @@ export default async (req, context) => {
   try {
     // Parse query parameters
     const url = new URL(req.url);
-    const filter = url.searchParams.get('filter');
+    const keyword = url.searchParams.get('keyword');
 
-    if (!filter) {
+    if (!keyword) {
       return new Response(
-        JSON.stringify({ error: 'Filter parameter required' }),
+        JSON.stringify({ error: 'Keyword parameter required' }),
         { status: 400, headers: { 'Content-Type': 'application/json' } }
       );
     }
 
     const sql = neon(process.env.DATABASE_URL);
 
+     const searchValue = `%${keyword}%`;
+
     // Parameterized query (prevents SQL injection)
-    const result = await sql`SELECT * FROM categories WHERE category_name LIKE %${filter}%;`;
+    const result = await sql`SELECT * FROM categories WHERE category_name LIKE ${searchValue};`;
 
     return new Response(JSON.stringify(result[0] || {}), {
       status: result.length > 0 ? 200 : 404,

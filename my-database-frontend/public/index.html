@@ -45,7 +45,7 @@
           <input type="text" id="category_name" required /><br />
 
           <label style="font-weight: bold">Description:</label><br />
-          <textarea id="description" rows="3"></textarea><br />
+          <textarea id="description" rows="4"></textarea><br />
 
           <button type="submit">Add Category</button>
         </form>
@@ -55,6 +55,18 @@
         />
 
         <h2>Category Records</h2>
+
+          <div style="margin-bottom: 15px;">
+          <label style="font-weight: bold">Search Category:</label><br />
+          <input 
+            type="text" 
+            id="categorySearchInput" 
+            placeholder="Enter category name..." 
+            style="width: 250px;"
+          />
+          <button id="categorySearchBtn" style="padding: 9px 30px;">Search</button>
+        </div>
+
         <div id="category_record">Product category details.</div>
       </div>
 

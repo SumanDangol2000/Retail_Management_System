@@ -36,4 +36,24 @@ document.getElementById("categoryForm").addEventListener("submit", (e) => {
 });
 
 
+document.getElementById("categorySearchBtn").addEventListener("click", (e) => {
+    e.preventDefault(); // prevent page reload / form submit
+
+    const keyword = document.getElementById("categorySearchInput").value.trim();
+
+    if (!keyword) {
+        showMessage("Please enter a search keyword", "error");
+        return;
+    }
+
+    console.log("Searching for:", keyword);
+
+    loadData(`/.netlify/functions/category-get-filter-items?keyword=${encodeURIComponent(keyword)}`, 
+             'category_record', 
+             'category');
+             
+});
+
+
+
 
