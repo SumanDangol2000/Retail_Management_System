@@ -24,8 +24,49 @@
 
     <div class="main-content">
       <div id="home" class="content show">
-        <h2>Home Page</h2>
-        <p>Welcome to the Retail Management System.</p>
+        <h2>Home Dashboard</h2>
+
+        <div
+          class="dashboard-metrics"
+          style="display: flex; gap: 20px; flex-wrap: wrap; margin-bottom: 30px"
+        >
+          <div class="metric-box">
+            <h3>Customers</h3>
+            <p id="totalCustomers" style="font-size: 24px; font-weight: bold">
+              0
+            </p>
+          </div>
+
+          <div class="metric-box">
+            <h3>Suppliers</h3>
+            <p id="totalSuppliers" style="font-size: 24px; font-weight: bold">
+              0
+            </p>
+          </div>
+
+          <div class="metric-box">
+            <h3>Last Month Sales</h3>
+            <p id="lastMonthSales" style="font-size: 24px; font-weight: bold">
+              $0
+            </p>
+          </div>
+
+          <div class="metric-box">
+            <h3>This Month Sales</h3>
+            <p id="thisMonthSales" style="font-size: 24px; font-weight: bold">
+              $0
+            </p>
+          </div>
+
+          <div class="metric-box">
+            <h3>Today's Sales</h3>
+            <p id="todaySales" style="font-size: 24px; font-weight: bold">$0</p>
+          </div>
+        </div>
+
+        <!-- Available Products Table -->
+        <h3>Available Products</h3>
+        <div id="available_product_record">View and manage products.</div>
       </div>
 
       <div id="customer" class="content">
@@ -56,15 +97,17 @@
 
         <h2>Category Records</h2>
 
-          <div style="margin-bottom: 15px;">
+        <div style="margin-bottom: 15px">
           <label style="font-weight: bold">Search Category:</label><br />
-          <input 
-            type="text" 
-            id="categorySearchInput" 
-            placeholder="Enter category name..." 
-            style="width: 250px;"
+          <input
+            type="text"
+            id="categorySearchInput"
+            placeholder="Enter category name..."
+            style="width: 250px"
           />
-          <button id="categorySearchBtn" style="padding: 9px 30px;">Search</button>
+          <button id="categorySearchBtn" style="padding: 9px 30px">
+            Search
+          </button>
         </div>
 
         <div id="category_record">Product category details.</div>
@@ -109,7 +152,6 @@
       });
     </script>
 
-    
     <script type="module" src="script.js"></script>
     <script type="module" src="category-script.js"></script>
   </body>
