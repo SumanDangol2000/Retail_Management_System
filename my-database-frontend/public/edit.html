@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+ 
+    <title>Edit Record</title>
+
+    <link rel="stylesheet" href="style.css" />
+
+</head>
+<body style="display: block; padding: 20px 50px;">
+
+    <h2 id="editTitle">Edit Record</h2>
+    <div id="editFormContainer">Loading...</div>
+
+    <script type="module">
+        import { showMessage } from "./script.js";
+
+        // Read URL parameters
+        const params = new URLSearchParams(window.location.search);
+        const tableName = params.get("table");
+        const id = params.get("id");
+
+        if (!tableName || !id) {
+            document.getElementById("editFormContainer").innerHTML =
+                "<p style='color:red'>Invalid parameters.</p>";
+        }
+
+        document.getElementById("editTitle").innerText =
+            `Edit ${tableName} (ID: ${id})`;
+
+
+        // STEP 1: Fetch the record to pre-fill form
+        async function loadRecord() {
+            const response = await fetch(`/.netlify/functions/${tableName}-get-item-by-id?id=${id}`);
+            const data = await response.json();
+
+            if (!response.ok) {
+                document.getElementById("editFormContainer").innerHTML =
+                    `<p style="color:red">Failed to load record: ${data.error}</p>`;
+                return;
+            }
+
+            buildDynamicForm(data);
+        }
+
+        // STEP 2: Build form fields dynamically based on response
+        function buildDynamicForm(record) {
+            let html = `<form id="dynamicEditForm">`;
+
+            Object.entries(record).forEach(([key, value]) => {
+                // Skip auto-generated ID fields
+                if (key.endsWith("_id")) return;
+
+                html += `
+                    <div class="form-control">
+                        <label>${key}</label><br/>
+                        <input type="text" name="${key}" value="${value ?? ""}" />
+                    </div>
+                `;
+            });
+
+            html += `
+                <button type="submit">Save</button>
+                <button type="button" id="cancelBtn">Cancel</button>
+            </form>
+            `;
+
+            document.getElementById("editFormContainer").innerHTML = html;
+
+            // Attach listeners
+            document.getElementById("dynamicEditForm").addEventListener("submit", saveChanges);
+            document.getElementById("cancelBtn").addEventListener("click", () => {
+                window.location.href = "/index.html";
+            });
+        }
+
+        // STEP 3: Handle Save button
+        async function saveChanges(e) {
+            e.preventDefault();
+
+            const formData = new FormData(e.target);
+            const updatedData = {};
+
+            formData.forEach((value, key) => updatedData[key] = value);
+
+            const response = await fetch(`/.netlify/functions/${tableName}-update-item-by-id?id=${id}`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(updatedData)
+            });
+
+            const result = await response.json();
+
+            if (!response.ok) {
+                alert("Update failed: " + (result.error || "Unknown error"));
+                return;
+            }
+
+            alert("Record updated successfully!");
+            window.location.href = "/index.html";
+        }
+
+        loadRecord();
+    </script>
+
+</body>
+</html>

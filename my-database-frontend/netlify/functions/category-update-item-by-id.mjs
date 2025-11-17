@@ -36,7 +36,7 @@ export default async (req, context) => {
     const sql = neon(process.env.DATABASE_URL);
 
     // Parameterized query (prevents SQL injection)
-    const result = await sql`UPDATE Categories SET category_name = ${category_name}, description = ${description} WHERE id = ${id};`;
+    const result = await sql`UPDATE Categories SET category_name = ${category_name}, description = ${description} WHERE category_id = ${id};`;
 
     return new Response(JSON.stringify(result[0] || {}), {
       status: result.length > 0 ? 200 : 404,

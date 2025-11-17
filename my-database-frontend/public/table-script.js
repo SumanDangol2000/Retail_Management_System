@@ -94,58 +94,9 @@ export function createTableFromJSON(jsonData, containerId, tableName, idField = 
 
 
 export async function handleEdit(tableName, id) {
-    // Option 1: Redirect to an edit page
-    // window.location.href = `/edit.html?table=${tableName}&id=${id}`;
-    // return;
+        
+    window.location.href = `/edit.html?table=${encodeURIComponent(tableName)}&id=${encodeURIComponent(id)}`;
 
-    // Option 2: Simple prompt editing (temporary solution)
-    const newValue = prompt(`Enter updated values for ${tableName} (JSON format):`);
-    if (!newValue) return;
-
-    let parsedData;
-    try {
-        parsedData = JSON.parse(newValue);
-    } catch (e) {
-        showMessage("Invalid JSON format", "error");
-        return;
-    }
-
-    try {
-        const response = await fetch(`/.netlify/functions/${tableName}-update-item-by-id?id=${encodeURIComponent(id)}`, {
-            method: "PUT",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(parsedData)
-        });
-
-        if (!response.ok) {
-            if (response.status === 404) {
-                showMessage(`Record not found for ID ${id}`, "error");
-            } else if (response.status === 400) {
-                showMessage("Invalid update data", "error");
-            } else if (response.status === 405) {
-                showMessage("Method not allowed. PUT required.", "error");
-            } else {
-                showMessage("Server error during update", "error");
-            }
-
-            console.error("Edit failed:", response.status);
-            return;
-        }
-
-        const result = await response.json();
-
-        showMessage(`Updated ${tableName} record with ID = ${id}`, "success");
-        console.log("Edit success:", result);
-
-        // Reload data
-        loadData(`/.netlify/functions/${tableName}-get-items`, `${tableName}_record`, tableName);
-
-    } catch (error) {
-        console.error("Edit error:", error);
-        showMessage("Network error while updating record", "error");
-    }
 }
 
 
