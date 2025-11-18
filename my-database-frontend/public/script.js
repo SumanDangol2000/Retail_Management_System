@@ -31,6 +31,7 @@ document.addEventListener("DOMContentLoaded", () => {
     loadData("/.netlify/functions/customer-get-items", "customer_record", "customer");
     loadData("/.netlify/functions/category-get-items", "category_record", "category");
     loadData("/.netlify/functions/product-get-items", "product_record", "product");
+    loadData("/.netlify/functions/product-get-availabe-product", "available_product_record", "product");
     loadData("/.netlify/functions/sales-get-items", "sales_record", "sales");
     loadData("/.netlify/functions/suppliers-get-items", "suppliers_record", "suppliers");
 
