@@ -1,6 +1,6 @@
 import { loadData, showMessage } from "./script.js";
 
-export function createTableFromJSON(jsonData, containerId, tableName, idField = null) {
+export function createTableFromJSON(jsonData, containerId, tableName, isActionRequired, idField = null) {
     // Convert single object to array
     if (!Array.isArray(jsonData)) {
         jsonData = [jsonData];
@@ -39,13 +39,15 @@ export function createTableFromJSON(jsonData, containerId, tableName, idField = 
         headerRow.appendChild(th);
     });
 
-    // Action column
-    const actionTh = document.createElement("th");
-    actionTh.innerText = "Action";
-    actionTh.style.border = "1px solid black";
-    actionTh.style.padding = "8px";
-    actionTh.style.background = "#ddd";
-    headerRow.appendChild(actionTh);
+    // Conditionally add Action column
+    if (isActionRequired) {
+        const actionTh = document.createElement("th");
+        actionTh.innerText = "Action";
+        actionTh.style.border = "1px solid black";
+        actionTh.style.padding = "8px";
+        actionTh.style.background = "#ddd";
+        headerRow.appendChild(actionTh);
+    }
 
     thead.appendChild(headerRow);
     table.appendChild(thead);
@@ -64,27 +66,27 @@ export function createTableFromJSON(jsonData, containerId, tableName, idField = 
             tr.appendChild(td);
         });
 
-        // Action buttons (Edit/Delete)
-        const actionTd = document.createElement("td");
-        actionTd.style.border = "1px solid black";
-        actionTd.style.padding = "8px";
+        // Conditionally add Action buttons
+        if (isActionRequired) {
+            const actionTd = document.createElement("td");
+            actionTd.style.border = "1px solid black";
+            actionTd.style.padding = "8px";
 
-        //Edit button
-        const editBtn = document.createElement("button");
-        editBtn.innerText = "Edit";
-        editBtn.style.marginRight = "5px";
-        editBtn.onclick = () => handleEdit(tableName, row[idField]);
+            const editBtn = document.createElement("button");
+            editBtn.innerText = "Edit";
+            editBtn.style.marginRight = "5px";
+            editBtn.onclick = () => handleEdit(tableName, row[idField]);
 
-        //Delete button
-        const deleteBtn = document.createElement("button");
-        deleteBtn.innerText = "Delete";
-        deleteBtn.style.backgroundColor = "#dc3545";
-        deleteBtn.onclick = () => handleDelete(tableName, row[idField]);
+            const deleteBtn = document.createElement("button");
+            deleteBtn.innerText = "Delete";
+            deleteBtn.style.backgroundColor = "#dc3545";
+            deleteBtn.onclick = () => handleDelete(tableName, row[idField]);
 
-        actionTd.appendChild(editBtn);
-        actionTd.appendChild(deleteBtn);
+            actionTd.appendChild(editBtn);
+            actionTd.appendChild(deleteBtn);
+            tr.appendChild(actionTd);
+        }
 
-        tr.appendChild(actionTd);
         tbody.appendChild(tr);
     });
 

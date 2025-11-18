@@ -1,9 +1,9 @@
 import { createTableFromJSON } from "./table-script.js";
 
-export function loadData(endpoint, containerId, tableName) {
+export function loadData(endpoint, containerId, tableName, isActionRequire = true) {
     fetch(endpoint)
         .then((resp) => resp.json())
-        .then((data) => createTableFromJSON(data, containerId, tableName))
+        .then((data) => createTableFromJSON(data, containerId, tableName, isActionRequire))
         .catch((err) => {
             console.error("Error:", err);
             document.getElementById(containerId).innerHTML =
@@ -31,7 +31,7 @@ document.addEventListener("DOMContentLoaded", () => {
     loadData("/.netlify/functions/customer-get-items", "customer_record", "customer");
     loadData("/.netlify/functions/category-get-items", "category_record", "category");
     loadData("/.netlify/functions/product-get-items", "product_record", "product");
-    loadData("/.netlify/functions/product-get-availabe-product", "available_product_record", "product");
+    loadData("/.netlify/functions/product-get-availabe-product", "available_product_record", "product", false);
     loadData("/.netlify/functions/sales-get-items", "sales_record", "sales");
     loadData("/.netlify/functions/suppliers-get-items", "suppliers_record", "suppliers");
 
