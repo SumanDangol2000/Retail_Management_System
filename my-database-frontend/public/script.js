@@ -42,7 +42,49 @@ document.addEventListener("DOMContentLoaded", () => {
     loadDataCount("/.netlify/functions/sales-get-previous-sales", "lastMonthSales");
     loadDataCount("/.netlify/functions/sales-get-current-sales", "thisMonthSales");
 
+    loadSalesChart();
 });
+
+
+async function loadSalesChart() {
+  const response = await fetch('/.netlify/functions/sales-get-sales-chart');
+  const data = await response.json();
+
+  // Prepare chart data
+  const months = [...new Set(data.map(item => item.sale_month))]; 
+  const products = [...new Set(data.map(item => item.product_name))];
+
+  // Build dataset for each product
+  const datasets = products.map(product => {
+    return {
+      label: product,
+      data: months.map(month => {
+        const record = data.find(d => d.product_name === product && d.sale_month === month);
+        return record ? record.total_sold : 0;
+      }),
+      fill: false,
+      borderWidth: 2
+    };
+  });
+
+  // Render chart
+  const ctx = document.getElementById('salesChart').getContext('2d');
+
+  new Chart(ctx, {
+    type: 'line',    // change to 'bar' for bar chart
+    data: {
+      labels: months,
+      datasets: datasets
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        title: { display: true, text: 'Product Sales Per Month' },
+      },
+      interaction: { intersect: false, mode: 'index' },
+    }
+  });
+}
 
 export function showMessage(msg, type = "info", duration = 3000) {
     const container = document.getElementById("globalMessage");

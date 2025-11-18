@@ -26,39 +26,44 @@
       <div id="home" class="content show">
         <h2>Home Dashboard</h2>
 
-        <div
-          class="dashboard-metrics"
-          style="display: flex; gap: 20px; flex-wrap: wrap; margin-bottom: 30px"
-        >
+        <div class="dashboard-metrics">
           <div class="metric-box">
             <h3>Customers</h3>
-            <p id="totalCustomers"  >0</p>
+            <p id="totalCustomers">0</p>
           </div>
 
           <div class="metric-box">
             <h3>Suppliers</h3>
-            <p id="totalSuppliers"  >0</p>
+            <p id="totalSuppliers">0</p>
           </div>
 
           <div class="metric-box">
             <h3>Last Month Sales</h3>
-            <p id="lastMonthSales"  >$0</p>
+            <p id="lastMonthSales">$0</p>
           </div>
 
           <div class="metric-box">
             <h3>This Month Sales</h3>
-            <p id="thisMonthSales"  >$0</p>
+            <p id="thisMonthSales">$0</p>
           </div>
 
           <div class="metric-box">
             <h3>Today's Sales</h3>
-            <p id="todaySales"  >$0</p>
+            <p id="todaySales">$0</p>
           </div>
         </div>
 
-        <!-- Available Products Table -->
-        <h3>Available Products</h3>
-        <div id="available_product_record">View and manage products.</div>
+        <div class="dashboard-content">
+          <div>
+            <h3>Available Products</h3>
+            <div id="available_product_record">View and manage products.</div>
+          </div>
+
+          <div>
+            <h3>Monthly Product Sales</h3>
+            <canvas id="salesChart"></canvas>
+          </div>
+        </div>
       </div>
 
       <div id="customer" class="content">
@@ -146,5 +151,7 @@
 
     <script type="module" src="script.js"></script>
     <script type="module" src="category-script.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
   </body>
 </html>
