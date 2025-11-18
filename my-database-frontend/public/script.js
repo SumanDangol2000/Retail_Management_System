@@ -1,24 +1,46 @@
 import { createTableFromJSON } from "./table-script.js";
 
-
 export function loadData(endpoint, containerId, tableName) {
     fetch(endpoint)
-        .then(resp => resp.json())
-        .then(data => createTableFromJSON(data, containerId, tableName))
-        .catch(err => {
+        .then((resp) => resp.json())
+        .then((data) => createTableFromJSON(data, containerId, tableName))
+        .catch((err) => {
             console.error("Error:", err);
             document.getElementById(containerId).innerHTML =
                 '<p style="color:red">Error loading data</p>';
         });
 }
 
+function loadDataCount(endpoint, containerId) {
+    fetch(endpoint)
+        .then((resp) => resp.json())
+        .then((data) => {
+            console.log(data)
+            const container = document.getElementById(containerId);
+            container.innerHTML = data;
+        })
+        .catch((err) => {
+            console.error("Error:", err);
+            document.getElementById(containerId).innerHTML =
+                '<p style="color:red">Error loading data</p>';
+        });
+}
 
 document.addEventListener("DOMContentLoaded", () => {
-    loadData('/.netlify/functions/customer-get-items', 'customer_record', 'customer');
-    loadData('/.netlify/functions/category-get-items', 'category_record', 'category');
-    loadData('/.netlify/functions/product-get-items', 'product_record', 'product');
-    loadData('/.netlify/functions/sales-get-items', 'sales_record', 'sales');
-    loadData('/.netlify/functions/suppliers-get-items', 'suppliers_record', 'suppliers');
+    
+    loadData("/.netlify/functions/customer-get-items", "customer_record", "customer");
+    loadData("/.netlify/functions/category-get-items", "category_record", "category");
+    loadData("/.netlify/functions/product-get-items", "product_record", "product");
+    loadData("/.netlify/functions/sales-get-items", "sales_record", "sales");
+    loadData("/.netlify/functions/suppliers-get-items", "suppliers_record", "suppliers");
+
+
+    loadDataCount("/.netlify/functions/customer-get-item-count", "totalCustomers");
+    loadDataCount("/.netlify/functions/suppliers-get-item-count", "totalSuppliers");
+
+    loadDataCount("/.netlify/functions/sales-get-previous-sales", "lastMonthSales");
+    loadDataCount("/.netlify/functions/sales-get-current-sales", "thisMonthSales");
+
 });
 
 export function showMessage(msg, type = "info", duration = 3000) {
@@ -67,5 +89,3 @@ export function showMessage(msg, type = "info", duration = 3000) {
         messageDiv.addEventListener("transitionend", () => messageDiv.remove());
     }, duration);
 }
-
-

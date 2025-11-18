@@ -80,3 +80,8 @@ button {
     border-radius: 8px;
     text-align: center;
 }
+
+.metric-box > p {
+    font-size: 24px; 
+    font-weight: bold
+}
