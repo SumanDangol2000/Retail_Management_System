@@ -5,13 +5,29 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Retail Management System</title>
     <link rel="stylesheet" href="style.css" />
+    <style>
+      /* small additions for table/pagination */
+      .table-controls {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 8px;
+      }
+      .rows-per-page { padding: 6px; }
+      .pagination { display:flex; gap:6px; align-items:center; margin-top:8px; flex-wrap:wrap; }
+      .pagination button { padding:6px 10px; cursor:pointer; }
+      .table-sortable th { cursor: pointer; user-select: none; }
+      .active-sort { text-decoration: underline; }
+      .metric-box { background:#f5f5f5; padding:16px; border-radius:8px; text-align:center; flex:1 1 150px; }
+      .dashboard-metrics { display:flex; gap:16px; flex-wrap:wrap; margin-bottom:18px; }
+      .dashboard-content { display:flex; gap:20px; flex-wrap:wrap; }
+      .dashboard-content > div { flex:1 1 calc(50% - 10px); box-sizing:border-box; }
+    </style>
   </head>
   <body>
     <!-- Global message container -->
-    <div
-      id="globalMessage"
-      style="position: fixed; top: 20px; right: 20px; z-index: 9999"
-    ></div>
+    <div id="globalMessage" style="position: fixed; top: 20px; right: 20px; z-index: 9999"></div>
 
     <div class="sidebar">
       <a onclick="openTab('home', this)" class="active-tab">Home</a>
@@ -56,7 +72,11 @@
         <div class="dashboard-content">
           <div>
             <h3>Available Products</h3>
-            <div id="available_product_record">View and manage products.</div>
+
+            <!-- In-table controls will be injected by table-script when createTableFromJSON runs -->
+            <div id="available_product_controls" class="table-controls"></div>
+            <div id="available_product_record">Loading products...</div>
+            <div id="available_product_pagination" class="pagination"></div>
           </div>
 
           <div>
@@ -68,12 +88,16 @@
 
       <div id="customer" class="content">
         <h2>Customer Records</h2>
+        <div id="customer_controls" class="table-controls"></div>
         <div id="customer_record">Manage your customers here.</div>
+        <div id="customer_pagination" class="pagination"></div>
       </div>
 
       <div id="product" class="content">
         <h2>Product Page</h2>
+        <div id="product_controls" class="table-controls"></div>
         <div id="product_record">View and manage products.</div>
+        <div id="product_pagination" class="pagination"></div>
       </div>
 
       <div id="category" class="content">
@@ -88,36 +112,33 @@
           <button type="submit">Add Category</button>
         </form>
 
-        <hr
-          style="margin: 20px 0; border: 0; height: 1px; background-color: #ddd"
-        />
+        <hr style="margin: 20px 0; border: 0; height: 1px; background-color: #ddd" />
 
         <h2>Category Records</h2>
 
         <div style="margin-bottom: 15px">
           <label style="font-weight: bold">Search Category:</label><br />
-          <input
-            type="text"
-            id="categorySearchInput"
-            placeholder="Enter category name..."
-            style="width: 250px"
-          />
-          <button id="categorySearchBtn" style="padding: 9px 30px">
-            Search
-          </button>
+          <input type="text" id="categorySearchInput" placeholder="Enter category name..." style="width: 250px" />
+          <button id="categorySearchBtn" style="padding: 9px 30px">Search</button>
         </div>
 
+        <div id="category_controls" class="table-controls"></div>
         <div id="category_record">Product category details.</div>
+        <div id="category_pagination" class="pagination"></div>
       </div>
 
       <div id="sales" class="content">
         <h2>Sales Page</h2>
+        <div id="sales_controls" class="table-controls"></div>
         <div id="sales_record">View and record sales.</div>
+        <div id="sales_pagination" class="pagination"></div>
       </div>
 
       <div id="suppliers" class="content">
         <h2>Vendor Page</h2>
+        <div id="suppliers_controls" class="table-controls"></div>
         <div id="suppliers_record">View and manage vendors.</div>
+        <div id="suppliers_pagination" class="pagination"></div>
       </div>
     </div>
 
@@ -135,23 +156,27 @@
 
         // Save current tab
         localStorage.setItem("activeTab", tabId);
+
+        // If page-specific initializer exists on window, call it
+        if (window['init' + capitalize(tabId)]) {
+          try { window['init' + capitalize(tabId)](); } catch (e) { console.error(e); }
+        }
       }
 
       // On page load, open saved tab
       window.addEventListener("load", () => {
-        const savedTab = localStorage.getItem("activeTab");
-        if (savedTab) {
-          const tabElement = Array.from(
-            document.querySelectorAll(".sidebar a")
-          ).find((el) => el.getAttribute("onclick")?.includes(savedTab));
-          if (tabElement) openTab(savedTab, tabElement);
-        }
+        const savedTab = localStorage.getItem("activeTab") || 'home';
+        const tabElement = Array.from(document.querySelectorAll(".sidebar a"))
+          .find((el) => el.getAttribute("onclick")?.includes(savedTab));
+        if (tabElement) openTab(savedTab, tabElement);
       });
+
+      function capitalize(s){ return s.charAt(0).toUpperCase()+s.slice(1); }
     </script>
 
+    <!-- load your app scripts -->
     <script type="module" src="script.js"></script>
-    <script type="module" src="category-script.js"></script>
+    <script type="module" src="table-script.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
   </body>
 </html>
