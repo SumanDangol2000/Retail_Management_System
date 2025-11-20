@@ -71,7 +71,7 @@ async function loadSalesChart() {
   const ctx = document.getElementById('salesChart').getContext('2d');
 
   new Chart(ctx, {
-    type: 'line',    // change to 'bar' for bar chart
+    type: 'bar',    // change to 'bar' for bar chart
     data: {
       labels: months,
       datasets: datasets
