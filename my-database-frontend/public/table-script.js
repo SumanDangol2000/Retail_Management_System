@@ -1,249 +1,244 @@
 // table-script.js
-// Generic table renderer with sorting & pagination for multiple tables
-import { loadData, showMessage } from "./script.js"; // your existing utilities
+// Generic table renderer with sorting, pagination, search, and optional action column
+import { loadData, showMessage } from "./script.js";
 
-// Per-table UI state stored here
+// Global table UI states
 const tableStates = new Map();
 
 /**
- * createTableFromJSON(jsonData, containerId, tableName, isActionRequired, idField = null)
- * - jsonData: array or single object
- * - containerId: id of the container where table will be injected
- * - tableName: name of table (used for API endpoints and state key)
- * - isActionRequired: boolean to add Edit/Delete action column
- * - idField: optional primary key field (defaults to *_id detection)
+ * createTableFromJSON()
+ * - jsonData: array of objects (or 1 object)
+ * - containerId: the div where table goes (ex: "products_record")
+ * - tableName: name used for state & API calls
+ * - isActionRequired: boolean (whether to show Edit/Delete)
+ * - idField: optional primary key (auto-detected if not provided)
  */
 export function createTableFromJSON(jsonData, containerId, tableName, isActionRequired = true, idField = null) {
-    // Normalize array
     if (!Array.isArray(jsonData)) jsonData = [jsonData];
 
-    // initialize state if needed
+    // Initialize state if first time
     if (!tableStates.has(tableName)) {
         tableStates.set(tableName, {
-            originalData: [],    // full dataset
-            filteredData: [],    // after search/filter
+            originalData: [],
+            filteredData: [],
             currentPage: 1,
             rowsPerPage: 10,
-            sortBy: null,        // field name
-            sortDir: 'asc'       // 'asc' | 'desc'
+            sortBy: null,
+            sortDir: "asc",
+            idField: null,
+            isActionRequired: true
         });
     }
 
     const state = tableStates.get(tableName);
-    state.originalData = jsonData.slice(); // store original
-    state.filteredData = jsonData.slice(); // initial same
-    state.currentPage = 1; // reset page on data load
+    state.originalData = [...jsonData];
+    state.filteredData = [...jsonData];
+    state.currentPage = 1;
 
-    // detect idField if not provided
+    // Detect ID field if missing
     if (!idField) {
-        idField = Object.keys(jsonData[0] || {}).find(k => k.endsWith('_id')) || 'id';
+        idField = Object.keys(jsonData[0]).find(k => k.endsWith("_id")) || "id";
     }
-
-    // Save idField to state for action handlers
     state.idField = idField;
+    state.isActionRequired = isActionRequired;
 
-    // Render controls (rows per page, search if needed)
+    // Render search + rows per page controls
     renderControls(containerId, tableName);
 
-    // Render the table with current state
-    renderTable(containerId, tableName, isActionRequired);
+    // Render table
+    renderTable(containerId, tableName);
 }
 
-// --------------- Controls ----------------
+/* -----------------------------------
+   RENDER CONTROLS (search + rows)
+-------------------------------------- */
 function renderControls(containerId, tableName) {
     const state = tableStates.get(tableName);
-    const controlsId = containerId.replace('_record','_controls');
+    const controlsId = containerId.replace("_record", "_controls");
     const controls = document.getElementById(controlsId);
     if (!controls) return;
 
-    controls.innerHTML = '';
+    const searchId = containerId + "_search";
+    const rowsId = containerId + "_rows";
 
-    // Left area: search box (only one exists in page for category; keep optional)
-    const searchInputId = containerId + '_search';
-    const searchHtml = `
-        <div>
-            <input id="${searchInputId}" placeholder="Search..." style="padding:6px;" />
-            <button id="${searchInputId}_btn" style="padding:6px;margin-left:6px;">Search</button>
-            <button id="${searchInputId}_clear" style="padding:6px;margin-left:6px;">Clear</button>
+    controls.innerHTML = `
+        <div style="display:flex; justify-content:space-between; width:100%;">
+            <div>
+                <input id="${searchId}" placeholder="Search..." style="padding:6px;">
+                <button id="${searchId}_btn" style="padding:6px; margin-left:6px;">Search</button>
+                <button id="${searchId}_clear" style="padding:6px; margin-left:6px;">Clear</button>
+            </div>
+            <div>
+                <label>Rows per page:</label>
+                <select id="${rowsId}" class="rows-per-page">
+                    <option value="10" ${state.rowsPerPage === 10 ? "selected" : ""}>10</option>
+                    <option value="20" ${state.rowsPerPage === 20 ? "selected" : ""}>20</option>
+                    <option value="50" ${state.rowsPerPage === 50 ? "selected" : ""}>50</option>
+                </select>
+            </div>
         </div>
     `;
-    // Right area: rows per page selector
-    const rightHtml = `
-        <div>
-            <label>Rows per page:</label>
-            <select id="${containerId}_rows" class="rows-per-page">
-                <option value="10" ${state.rowsPerPage===10?'selected':''}>10</option>
-                <option value="20" ${state.rowsPerPage===20?'selected':''}>20</option>
-                <option value="50" ${state.rowsPerPage===50?'selected':''}>50</option>
-            </select>
-        </div>
-    `;
 
-    controls.innerHTML = `<div style="display:flex;justify-content:space-between;width:100%">${searchHtml}${rightHtml}</div>`;
+    document.getElementById(`${searchId}_btn`).onclick = () => {
+        const term = document.getElementById(searchId).value.toLowerCase();
+        applySearch(tableName, term, containerId);
+    };
 
-    // attach events
-    document.getElementById(`${searchInputId}_btn`).onclick = () => {
-        const term = document.getElementById(searchInputId).value.trim().toLowerCase();
-        applySearch(tableName, term);
+    document.getElementById(`${searchId}_clear`).onclick = () => {
+        document.getElementById(searchId).value = "";
+        applySearch(tableName, "", containerId);
     };
-    document.getElementById(`${searchInputId}_clear`).onclick = () => {
-        document.getElementById(searchInputId).value = '';
-        applySearch(tableName, '');
-    };
-    document.getElementById(`${containerId}_rows`).onchange = (e) => {
+
+    document.getElementById(rowsId).onchange = (e) => {
         state.rowsPerPage = Number(e.target.value);
         state.currentPage = 1;
         renderTable(containerId, tableName);
     };
 }
 
-// ------------ Search/filter -------------
-function applySearch(tableName, term) {
+/* -----------------------------------
+   SEARCH FILTERING
+-------------------------------------- */
+function applySearch(tableName, term, containerId) {
     const state = tableStates.get(tableName);
-    if (!state) return;
+
     if (!term) {
-        state.filteredData = state.originalData.slice();
+        state.filteredData = [...state.originalData];
     } else {
-        const columns = Object.keys(state.originalData[0] || {});
-        state.filteredData = state.originalData.filter(row => {
-            return columns.some(col => {
-                const val = row[col];
-                return val != null && String(val).toLowerCase().includes(term);
-            });
-        });
+        const cols = Object.keys(state.originalData[0]);
+        state.filteredData = state.originalData.filter(row =>
+            cols.some(col =>
+                row[col] != null && String(row[col]).toLowerCase().includes(term)
+            )
+        );
     }
+
     state.currentPage = 1;
-    renderTable(`${tableName}_record`, tableName);
+    renderTable(containerId, tableName);
 }
 
-// ------------ Sorting -------------
+/* -----------------------------------
+   SORTING
+-------------------------------------- */
 function applySort(state, field) {
     if (state.sortBy === field) {
-        state.sortDir = state.sortDir === 'asc' ? 'desc' : 'asc';
+        state.sortDir = state.sortDir === "asc" ? "desc" : "asc";
     } else {
         state.sortBy = field;
-        state.sortDir = 'asc';
+        state.sortDir = "asc";
     }
 
+    const dir = state.sortDir === "asc" ? 1 : -1;
+
     state.filteredData.sort((a, b) => {
-        const av = a[field], bv = b[field];
-        if (av == null && bv == null) return 0;
-        if (av == null) return state.sortDir === 'asc' ? -1 : 1;
-        if (bv == null) return state.sortDir === 'asc' ? 1 : -1;
+        const av = a[field];
+        const bv = b[field];
 
-        // numeric?
-        if (!isNaN(Number(av)) && !isNaN(Number(bv))) {
-            return state.sortDir === 'asc' ? (Number(av) - Number(bv)) : (Number(bv) - Number(av));
-        }
+        if (!isNaN(av) && !isNaN(bv)) return (av - bv) * dir;
 
-        // date?
-        const da = Date.parse(av), db = Date.parse(bv);
-        if (!isNaN(da) && !isNaN(db)) {
-            return state.sortDir === 'asc' ? (da - db) : (db - da);
-        }
+        const da = Date.parse(av);
+        const db = Date.parse(bv);
+        if (!isNaN(da) && !isNaN(db)) return (da - db) * dir;
 
-        // string fallback
-        return state.sortDir === 'asc' ? String(av).localeCompare(String(bv)) : String(bv).localeCompare(String(av));
+        return String(av).localeCompare(String(bv)) * dir;
     });
 }
 
-// ------------ Render Table -------------
-function renderTable(containerId, tableName, isActionRequired = true) {
+/* -----------------------------------
+   RENDER TABLE
+-------------------------------------- */
+function renderTable(containerId, tableName) {
     const state = tableStates.get(tableName);
-    if (!state) return;
-
     const container = document.getElementById(containerId);
-    container.innerHTML = ''; // clear
 
-    if (!state.filteredData || state.filteredData.length === 0) {
-        container.innerHTML = '<p>No data available</p>';
-        // clear pagination
+    container.innerHTML = "";
+
+    if (!state.filteredData.length) {
+        container.innerHTML = "<p>No data found.</p>";
         renderPagination(containerId, tableName);
         return;
     }
 
-    // Apply sorting if set
     if (state.sortBy) applySort(state, state.sortBy);
 
-    // Paging
     const total = state.filteredData.length;
-    const perPage = state.rowsPerPage || 10;
-    const totalPages = Math.max(1, Math.ceil(total / perPage));
+    const perPage = state.rowsPerPage;
+    const totalPages = Math.ceil(total / perPage);
+
     if (state.currentPage > totalPages) state.currentPage = totalPages;
+
     const start = (state.currentPage - 1) * perPage;
     const pageData = state.filteredData.slice(start, start + perPage);
 
-    // build table
-    const headers = Object.keys(state.filteredData[0]);
+    const headers = Object.keys(pageData[0]);
 
-    const table = document.createElement('table');
-    table.className = 'table-sortable';
-    table.style.width = '100%';
-    table.style.borderCollapse = 'collapse';
+    const table = document.createElement("table");
+    table.style.width = "100%";
+    table.style.borderCollapse = "collapse";
 
-    // thead
-    const thead = document.createElement('thead');
-    const hr = document.createElement('tr');
+    const thead = document.createElement("thead");
+    const trHead = document.createElement("tr");
+
     headers.forEach(h => {
-        const th = document.createElement('th');
+        const th = document.createElement("th");
         th.innerText = prettifyHeader(h);
-        th.style.border = '1px solid #ccc';
-        th.style.padding = '8px';
+        th.style.padding = "8px";
+        th.style.border = "1px solid #ccc";
+        th.style.cursor = "pointer";
+
         th.onclick = () => {
-            state.sortBy = h;
             applySort(state, h);
-            renderTable(containerId, tableName, isActionRequired);
+            renderTable(containerId, tableName);
         };
+
         if (state.sortBy === h) {
-            th.classList.add('active-sort');
-            th.innerText += state.sortDir === 'asc' ? ' ▲' : ' ▼';
+            th.innerText += state.sortDir === "asc" ? " ▲" : " ▼";
         }
-        hr.appendChild(th);
+
+        trHead.appendChild(th);
     });
 
-    if (isActionRequired) {
-        const ath = document.createElement('th');
-        ath.innerText = 'Action';
-        ath.style.border = '1px solid #ccc';
-        ath.style.padding = '8px';
-        hr.appendChild(ath);
+    if (state.isActionRequired) {
+        const act = document.createElement("th");
+        act.innerText = "Action";
+        act.style.padding = "8px";
+        act.style.border = "1px solid #ccc";
+        trHead.appendChild(act);
     }
 
-    thead.appendChild(hr);
+    thead.appendChild(trHead);
     table.appendChild(thead);
 
-    // tbody
-    const tbody = document.createElement('tbody');
+    const tbody = document.createElement("tbody");
+
     pageData.forEach(row => {
-        const tr = document.createElement('tr');
+        const tr = document.createElement("tr");
         headers.forEach(h => {
-            const td = document.createElement('td');
-            td.innerText = row[h] != null ? row[h] : '';
-            td.style.border = '1px solid #ddd';
-            td.style.padding = '8px';
+            const td = document.createElement("td");
+            td.innerText = row[h] ?? "";
+            td.style.padding = "8px";
+            td.style.border = "1px solid #ddd";
             tr.appendChild(td);
         });
 
-        if (isActionRequired) {
-            const actionTd = document.createElement('td');
-            actionTd.style.border = '1px solid #ddd';
-            actionTd.style.padding = '8px';
+        if (state.isActionRequired) {
+            const actionTd = document.createElement("td");
+            actionTd.style.padding = "8px";
+            actionTd.style.border = "1px solid #ddd";
 
-            // Edit
-            const editBtn = document.createElement('button');
-            editBtn.innerText = 'Edit';
-            editBtn.style.marginRight = '6px';
-            editBtn.onclick = () => handleEdit(tableName, row[state.idField]);
+            const edit = document.createElement("button");
+            edit.innerText = "Edit";
+            edit.style.marginRight = "6px";
+            edit.onclick = () => handleEdit(tableName, row[state.idField]);
 
-            // Delete
-            const delBtn = document.createElement('button');
-            delBtn.innerText = 'Delete';
-            delBtn.style.background = '#dc3545';
-            delBtn.style.color = '#fff';
-            delBtn.onclick = () => handleDelete(tableName, row[state.idField]);
+            const del = document.createElement("button");
+            del.innerText = "Delete";
+            del.style.background = "#dc3545";
+            del.style.color = "#fff";
+            del.onclick = () => handleDelete(tableName, row[state.idField]);
 
-            actionTd.appendChild(editBtn);
-            actionTd.appendChild(delBtn);
+            actionTd.appendChild(edit);
+            actionTd.appendChild(del);
             tr.appendChild(actionTd);
         }
 
@@ -253,93 +248,85 @@ function renderTable(containerId, tableName, isActionRequired = true) {
     table.appendChild(tbody);
     container.appendChild(table);
 
-    // render pagination controls
     renderPagination(containerId, tableName);
 }
 
-// ------------- Pagination ---------------
+/* -----------------------------------
+   PAGINATION
+-------------------------------------- */
 function renderPagination(containerId, tableName) {
     const state = tableStates.get(tableName);
-    if (!state) return;
-
-    const paginationId = containerId.replace('_record','_pagination');
+    const paginationId = containerId.replace("_record", "_pagination");
     const container = document.getElementById(paginationId);
     if (!container) return;
 
-    container.innerHTML = ''; // clear
+    container.innerHTML = "";
 
     const total = state.filteredData.length;
-    const perPage = state.rowsPerPage || 10;
-    const totalPages = Math.max(1, Math.ceil(total / perPage));
-    const current = state.currentPage;
+    const perPage = state.rowsPerPage;
+    const totalPages = Math.ceil(total / perPage);
 
-    // Prev
-    const prevBtn = document.createElement('button');
-    prevBtn.innerText = 'Prev';
-    prevBtn.disabled = current === 1;
-    prevBtn.onclick = () => { state.currentPage = Math.max(1, current - 1); renderTable(containerId, tableName); };
-    container.appendChild(prevBtn);
+    const prev = document.createElement("button");
+    prev.innerText = "Prev";
+    prev.disabled = state.currentPage === 1;
+    prev.onclick = () => {
+        state.currentPage--;
+        renderTable(containerId, tableName);
+    };
+    container.appendChild(prev);
 
-    // page numbers: show upto 7 with sliding window
-    const maxButtons = 7;
-    let startPage = Math.max(1, current - Math.floor(maxButtons/2));
-    let endPage = Math.min(totalPages, startPage + maxButtons - 1);
-    if (endPage - startPage < maxButtons - 1) startPage = Math.max(1, endPage - maxButtons + 1);
-
-    for (let i = startPage; i <= endPage; i++) {
-        const b = document.createElement('button');
-        b.innerText = i;
-        b.disabled = (i === current);
-        b.onclick = (() => { const page = i; return () => { state.currentPage = page; renderTable(containerId, tableName); }; })();
-        container.appendChild(b);
+    for (let i = 1; i <= totalPages; i++) {
+        const btn = document.createElement("button");
+        btn.innerText = i;
+        btn.disabled = i === state.currentPage;
+        btn.onclick = () => {
+            state.currentPage = i;
+            renderTable(containerId, tableName);
+        };
+        container.appendChild(btn);
     }
 
-    // Next
-    const nextBtn = document.createElement('button');
-    nextBtn.innerText = 'Next';
-    nextBtn.disabled = current === totalPages;
-    nextBtn.onclick = () => { state.currentPage = Math.min(totalPages, current + 1); renderTable(containerId, tableName); };
-    container.appendChild(nextBtn);
-
-    // show total
-    const info = document.createElement('span');
-    info.style.marginLeft = '10px';
-    info.innerText = ` Page ${current} of ${totalPages} (${total} items)`;
-    container.appendChild(info);
+    const next = document.createElement("button");
+    next.innerText = "Next";
+    next.disabled = state.currentPage === totalPages;
+    next.onclick = () => {
+        state.currentPage++;
+        renderTable(containerId, tableName);
+    };
+    container.appendChild(next);
 }
 
-// --------------- Helpers ----------------
+/* -----------------------------------
+   HELPERS
+-------------------------------------- */
 function prettifyHeader(h) {
-    // convert snake_case to "Title Case"
-    return h.replace(/_/g,' ').replace(/\b\w/g, c => c.toUpperCase());
+    return h.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
 }
 
-// --------------- Edit & Delete (exported) ---------------
+/* -----------------------------------
+   EDIT & DELETE
+-------------------------------------- */
 export function handleEdit(tableName, id) {
-    window.location.href = `/edit.html?table=${encodeURIComponent(tableName)}&id=${encodeURIComponent(id)}`;
+    window.location.href = `/edit.html?table=${tableName}&id=${id}`;
 }
 
 export async function handleDelete(tableName, id) {
-    if (!confirm(`Are you sure you want to delete ID ${id} from ${tableName}?`)) return;
+    if (!confirm(`Delete ID ${id}?`)) return;
 
     try {
-        const response = await fetch(`/.netlify/functions/${tableName}-delete-item-by-id?id=${encodeURIComponent(id)}`, {
+        const res = await fetch(`/.netlify/functions/${tableName}-delete-item-by-id?id=${id}`, {
             method: "DELETE"
         });
 
-        if (!response.ok) {
-            const status = response.status;
-            if (status === 404) showMessage(`Record not found for ID ${id} in ${tableName}`, 'error');
-            else if (status === 400) showMessage('Invalid ID or missing parameter', 'error');
-            else showMessage('Server error. Try again later.', 'error');
+        if (!res.ok) {
+            showMessage("Delete failed", "error");
             return;
         }
 
-        // reload data for this table
-        showMessage(`Deleted ${tableName} record with ID = ${id}`, 'success');
+        showMessage("Deleted successfully", "success");
         loadData(`/.netlify/functions/${tableName}-get-items`, `${tableName}_record`, tableName);
+
     } catch (err) {
-        console.error('Delete error', err);
-        showMessage('Network error while deleting record', 'error');
+        showMessage("Network error", "error");
     }
 }

@@ -7,12 +7,22 @@ export default async (req, context) => {
       return new Response('Method not allowed', { status: 405 });
     }
 
-    // Parse request body
-    const body = await req.json();
-    const { column1, column2, column3 } = body;
+    // SAFE JSON PARSING
+    let body = {};
+    try {
+      body = await req.json();
+    } catch (err) {
+      console.error("JSON PARSE ERROR:", err);
+      return new Response(JSON.stringify({ error: "Invalid JSON" }), {
+        status: 400,
+        headers: { "Content-Type": "application/json" }
+      });
+    }
 
-    // Validate input
-    if (!column1 || !column2) {
+    const { product_name, category_id, supplier_id, price, quantity } = body;
+
+            // Validate input
+    if (!product_name || !category_id || !supplier_id || !price || !quantity) {
       return new Response(
         JSON.stringify({ error: 'Required fields missing' }),
         { status: 400, headers: { 'Content-Type': 'application/json' } }
@@ -22,10 +32,8 @@ export default async (req, context) => {
     const sql = neon(process.env.DATABASE_URL);
 
     // Insert with parameterized query
-    const result = await sql(
-      'INSERT INTO your_table (column1, column2, column3) VALUES ($1, $2, $3) RETURNING *',
-      [column1, column2, column3]
-    );
+    const result = await sql`INSERT INTO Products (product_name, category_id, supplier_id, price, quantity_in_stock) 
+                              VALUES (${product_name}, ${category_id}, ${supplier_id}, ${price}, ${quantity}) RETURNING *;`;
 
     return new Response(JSON.stringify(result[0]), {
       status: 201,

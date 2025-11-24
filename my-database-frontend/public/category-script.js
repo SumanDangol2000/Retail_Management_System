@@ -24,7 +24,7 @@ document.getElementById("categoryForm").addEventListener("submit", (e) => {
                 return;
             }
 
-            showMessage("Record added successfully!", "success");
+            showMessage("Category added successfully!", "success");
             loadData('/.netlify/functions/category-get-items', 'category_record', 'category');
 
             // return data;

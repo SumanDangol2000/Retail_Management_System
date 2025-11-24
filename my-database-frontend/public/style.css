@@ -86,7 +86,7 @@ button {
   font-weight: bold;
 }
 
-.dashboard-metrics{
+.dashboard-metrics {
   display: flex;
   gap: 20px;
   flex-wrap: wrap;
@@ -102,4 +102,90 @@ button {
 .dashboard-content > div {
   flex: 1 1 calc(50% - 20px); /* 50% minus the gap */
   box-sizing: border-box;
+}
+
+.table-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+.rows-per-page {
+  padding: 6px;
+}
+.pagination {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  margin-top: 8px;
+  flex-wrap: wrap;
+}
+.pagination button {
+  padding: 6px 10px;
+  cursor: pointer;
+}
+.table-sortable th {
+  cursor: pointer;
+  user-select: none;
+}
+.active-sort {
+  text-decoration: underline;
+}
+.metric-box {
+  background: #f5f5f5;
+  padding: 16px;
+  border-radius: 8px;
+  text-align: center;
+  flex: 1 1 150px;
+}
+.dashboard-metrics {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 18px;
+}
+.dashboard-content {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+.dashboard-content > div {
+  flex: 1 1 calc(50% - 10px);
+  box-sizing: border-box;
+}
+
+/* General styling for select dropdowns */
+select {
+    margin-top: 5px;
+  margin-bottom: 15px;
+  width: 100%;                 /* Full width for consistency */
+  padding: 10px;               /* Comfortable spacing */
+  border: 1px solid #ccc;      /* Light border */
+  border-radius: 5px;          /* Rounded corners */
+  background-color: #f9f9f9;   /* Subtle background */
+  font-size: 14px;             /* Readable text size */
+  font-family: Arial, sans-serif;
+  color: #333;                 /* Dark text for contrast */
+  appearance: none;            /* Remove default browser styling */
+  cursor: pointer;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Hover effect */
+select:hover {
+  border-color: #888;
+}
+
+/* Focus effect */
+select:focus {
+  outline: none;
+  border-color: #4a90e2;       /* Highlight border */
+  box-shadow: 0 0 5px rgba(74, 144, 226, 0.5);
+}
+
+/* Style for options inside dropdown */
+select option {
+  padding: 8px;
+  font-size: 14px;
 }
