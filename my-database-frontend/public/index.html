@@ -71,6 +71,30 @@
     <!-- Customer container -->
       <div id="customer" class="content">
         <h2>Customer Records</h2>
+
+        <form id="customerForm">
+          <label style="font-weight: bold">First Name:</label><br />
+          <input type="text" id="customer_first_name" required /><br />
+
+          <label style="font-weight: bold">Last Name:</label><br />
+          <input type="text" id="customer_last_name" required /><br />
+
+          <label style="font-weight: bold">Contact:</label><br />
+          <input type="text" maxlength="10" id="customer_contact" required /><br />
+
+          <label style="font-weight: bold">Email:</label><br />
+          <input type="email" id="customer_email" required /><br />
+
+          <label style="font-weight: bold">Address:</label><br />
+          <textarea id="customer_address" rows="4"></textarea><br />
+
+          <button type="submit">Add Category</button>
+        </form>
+
+        <hr style="margin: 20px 0; border: 0; height: 1px; background-color: #ddd" />
+
+        <h2>Category Records</h2>
+
         <div id="customer_controls" class="table-controls"></div>
         <div id="customer_record">Manage your customers here.</div>
         <div id="customer_pagination" class="pagination"></div>
@@ -103,7 +127,7 @@
 
         <hr style="margin: 20px 0; border: 0; height: 1px; background-color: #ddd" />
 
-        <h2>Category Records</h2>
+        <h2>Product Records</h2>
 
 
         <div id="product_controls" class="table-controls"></div>
@@ -144,6 +168,28 @@
     <!-- Sales container -->
       <div id="sales" class="content">
         <h2>Sales Page</h2>
+
+          <form id="salesForm">
+            <label style="font-weight: bold">Customer:</label><br />
+            <select id="sales_customer" required></select><br />
+
+            <label style="font-weight: bold">Product:</label><br />
+            <select id="sales_product" required></select><br />
+
+            <label style="font-weight: bold">Quantity:</label><br />
+            <input type="number" min="0" id="sales_quantity_sold" required /><br />
+
+            <label style="font-weight: bold">Total Amount:</label><br />
+            <input type="number" step="0.01" min="0"  id="sales_total_amount" required /><br />
+
+            <button type="submit">Add</button>
+            <button id="sales_clear">Clear</button>
+          </form>
+
+        <hr style="margin: 20px 0; border: 0; height: 1px; background-color: #ddd" />
+
+        <h2>Product Records</h2>
+
         <div id="sales_controls" class="table-controls"></div>
         <div id="sales_record">View and record sales.</div>
         <div id="sales_pagination" class="pagination"></div>
@@ -152,7 +198,32 @@
 
     <!-- Suppliers container -->
       <div id="suppliers" class="content">
-        <h2>Vendor Page</h2>
+        <h2>Supplier Page</h2>
+
+        <form id="suppliersForm">
+          <label style="font-weight: bold">Supplier Name:</label><br />
+          <input type="text" id="supplier_name" required /><br />
+
+          <label style="font-weight: bold">Contact Person:</label><br />
+          <input type="text" id="supplier_contact_person" required /><br />
+
+          <label style="font-weight: bold">Phone Number:</label><br />
+          <input type="text" maxlength="10" id="supplier_phone"/><br />
+
+          <label style="font-weight: bold">Email:</label><br />
+          <input type="email" id="supplier_email" /><br />
+
+          <label style="font-weight: bold">Address:</label><br />
+          <textarea id="supplier_address" rows="4"></textarea><br />
+
+          <button type="submit">Add Supplier</button>
+          <button id="suppliers_clear">Clear</button>
+        </form>
+
+        <hr style="margin: 20px 0; border: 0; height: 1px; background-color: #ddd" />
+
+        <h2>Supplier Records</h2>
+
         <div id="suppliers_controls" class="table-controls"></div>
         <div id="suppliers_record">View and manage vendors.</div>
         <div id="suppliers_pagination" class="pagination"></div>
@@ -196,6 +267,8 @@
 
     <!-- Load external script files-->
     <script type="module" src="script.js"></script>
+    <script type="module" src="customer-script.js"></script>
+    <script type="module" src="suppliers-script.js"></script>
     <script type="module" src="table-script.js"></script>
     <script type="module" src="product-script.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
