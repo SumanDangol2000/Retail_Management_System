@@ -16,7 +16,7 @@ export default async (req, context) => {
     const sql = neon(process.env.DATABASE_URL);
 
     // Parameterized query (prevents SQL injection)
-    const result = await sql`SELECT * FROM Products WHERE product_id = ${id};`;
+    const result = await sql`SELECT * FROM Customers WHERE customer_id = ${id};`;
 
     return new Response(JSON.stringify(result[0] || {}), {
       status: result.length > 0 ? 200 : 404,
