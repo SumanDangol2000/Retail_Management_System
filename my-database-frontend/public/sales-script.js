@@ -5,11 +5,11 @@ document.addEventListener("DOMContentLoaded", function () {
   fetch("/.netlify/functions/customer-get-items")
     .then(response => response.json())
     .then(data => {
-      const categorySelect = document.getElementById("product_category");
-      data.forEach(category => {
+      const categorySelect = document.getElementById("sales_customer");
+      data.forEach(customer => {
         let option = document.createElement("option");
-        option.value = category.category_id; 
-        option.textContent = category.category_name;
+        option.value = customer.customer_id; 
+        option.textContent = customer.first_name + " " + customer.last_name;
         categorySelect.appendChild(option);
       });
     });
@@ -18,34 +18,33 @@ document.addEventListener("DOMContentLoaded", function () {
   fetch("/.netlify/functions/product-get-items")
     .then(response => response.json())
     .then(data => {
-      const supplierSelect = document.getElementById("product_supplier");
-      data.forEach(supplier => {
+      const supplierSelect = document.getElementById("sales_product");
+      data.forEach(product => {
         let option = document.createElement("option");
-        option.value = supplier.supplier_id;
-        option.textContent = supplier.supplier_name;
+        option.value = product.product_id;
+        option.textContent = product.product_name;
         supplierSelect.appendChild(option);
       });
     });
 
   // Handle form submission
-  document.getElementById("productForm").addEventListener("submit", function (e) {
+  document.getElementById("salesForm").addEventListener("submit", function (e) {
     e.preventDefault();
 
-    const productData = {
-      product_name: document.getElementById("product_name").value.trim(),
-      category_id: document.getElementById("product_category").value.trim(), // selected ID
-      supplier_id: document.getElementById("product_supplier").value.trim(), // selected ID
-      price: document.getElementById("product_price").value.trim(),
-      quantity: document.getElementById("product_quantity").value.trim()
+    const data = {
+      customer_id: document.getElementById("sales_customer").value.trim(),
+      product_id: document.getElementById("sales_product").value.trim(), 
+      quantity_sold: document.getElementById("sales_quantity_sold").value.trim(), 
+      total_amount: document.getElementById("sales_total_amount").value.trim()
     };
 
-    console.log("Form Data:", productData);
+    console.log("Data:", data);
 
     // Example: send to backend
-    fetch("/.netlify/functions/product-create-item", {
+    fetch("/.netlify/functions/sales-create-item", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(productData)
+      body: JSON.stringify(data)
     })
     .then(async response => {
     
@@ -55,8 +54,8 @@ document.addEventListener("DOMContentLoaded", function () {
             return;
         }
 
-        showMessage("Product added successfully!", "success");
-            loadData("/.netlify/functions/product-get-items", "product_record", "product");
+        showMessage("Record added successfully!", "success");
+        loadData("/.netlify/functions/sales-get-items", "sales_record", "sales");
 
         // return data;
     })
@@ -66,13 +65,5 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
   });
-
-   document.getElementById("product_clear").onclick = () => {
-        document.getElementById("product_name").value = "";
-        // document.getElementById("product_category").value = "";
-        // document.getElementById("product_supplier").value = "";
-        document.getElementById("product_price").value = "";
-        document.getElementById("product_quantity").value = "";
-    };
 
 });

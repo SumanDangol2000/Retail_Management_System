@@ -36,7 +36,7 @@ document.addEventListener("DOMContentLoaded", function () {
       category_id: document.getElementById("product_category").value.trim(), // selected ID
       supplier_id: document.getElementById("product_supplier").value.trim(), // selected ID
       price: document.getElementById("product_price").value.trim(),
-      quantity: document.getElementById("product_quantity").value.trim()
+      quantity_in_stock: document.getElementById("product_quantity").value.trim()
     };
 
     console.log("Form Data:", productData);
@@ -66,13 +66,5 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
   });
-
-   document.getElementById("product_clear").onclick = () => {
-        document.getElementById("product_name").value = "";
-        // document.getElementById("product_category").value = "";
-        // document.getElementById("product_supplier").value = "";
-        document.getElementById("product_price").value = "";
-        document.getElementById("product_quantity").value = "";
-    };
 
 });

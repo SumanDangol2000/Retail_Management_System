@@ -53,22 +53,24 @@
         }
       }
 
+
+      //Product
       function buildProductForm(record) {
         let html=    `<form id="productForm">
             <label style="font-weight: bold">Product Name:</label><br />
-            <input type="text" id="product_name" value="${record.product_name ?? ""}"" required /><br />
+            <input type="text" id="product_name" name="product_name" value="${record.product_name ?? ""}"" required /><br />
 
             <label style="font-weight: bold">Category:</label><br />
-            <select id="product_category" required></select><br />
+            <select id="product_category" name="category_id" required></select><br />
 
             <label style="font-weight: bold">Supplier:</label><br />
-            <select id="product_supplier" required></select><br />
+            <select id="product_supplier" name="supplier_id" required></select><br />
 
             <label style="font-weight: bold">Price:</label><br />
-            <input type="number" step="0.01" min="0"  id="product_price" value="${record .price ?? ""}" required /><br />
+            <input type="number" step="0.01" min="0"  id="product_price"  name="price"value="${record .price ?? ""}" required /><br />
 
             <label style="font-weight: bold">Quantity:</label><br />
-            <input type="number" min="0" id="product_quantity" value="${record.quantity_in_stock ?? ""}" required /><br />
+            <input type="number" min="0" id="product_quantity" name="quantity_in_stock" value="${record.quantity_in_stock ?? ""}" required /><br />
 
             <button type="submit">Save</button>
             <button type="button" id="cancelBtn">Cancel</button>
@@ -116,7 +118,69 @@
         });
       }
 
-      function buildSalesForm(record) {}
+
+      //SALES
+      function buildSalesForm(record) {
+
+        let html = `<form id="salesForm">
+            <label style="font-weight: bold">Customer:</label><br />
+            <select id="sales_customer" name="customer_id" required></select><br />
+
+            <label style="font-weight: bold">Product:</label><br />
+            <select id="sales_product" name="product_id" required></select><br />
+
+            <label style="font-weight: bold">Quantity:</label><br />
+            <input type="number" min="0" id="sales_quantity_sold" name="quantity_sold" value="${ record.quantity_sold ?? ""}" required /><br />
+
+            <label style="font-weight: bold">Total Amount:</label><br />
+            <input type="number" step="0.01" min="0"  id="sales_total_amount" name="total_amount" value="${record.total_amount ?? ""}" required /><br />
+
+            <button type="submit">Save</button>
+            <button type="button" id="cancelBtn">Cancel</button>
+          </form>`
+
+          document.getElementById("editFormContainer").innerHTML = html;
+
+            fetch("/.netlify/functions/customer-get-items")
+            .then(response => response.json())
+            .then(data => {
+              const categorySelect = document.getElementById("sales_customer");
+              data.forEach(customer => {
+                let option = document.createElement("option");
+                option.value = customer.customer_id; 
+                option.textContent = customer.first_name + " " + customer.last_name;
+                if(customer.customer_id === record.customer_id){
+                  option.selected = true;
+                }
+                categorySelect.appendChild(option);
+              });
+            });
+
+          // Load product
+          fetch("/.netlify/functions/product-get-items")
+            .then(response => response.json())
+            .then(data => {
+              const supplierSelect = document.getElementById("sales_product");
+              data.forEach(product => {
+                let option = document.createElement("option");
+                option.value = product.product_id;
+                option.textContent = product.product_name;
+                if (product.product_id === record.product_id) {
+                    option.selected = true;
+                }
+                supplierSelect.appendChild(option);
+              });
+            });
+
+        document
+          .getElementById("salesForm")
+          .addEventListener("submit", saveChanges);
+        document.getElementById("cancelBtn").addEventListener("click", () => {
+          window.location.href = "/index.html";
+        });
+
+
+      }
 
       // STEP 2: Build form fields dynamically based on response
       function buildDynamicForm(record) {
@@ -159,6 +223,8 @@
         const updatedData = {};
 
         formData.forEach((value, key) => (updatedData[key] = value));
+        
+        console.log("data : ", updatedData)
 
         const response = await fetch(
           `/.netlify/functions/${tableName}-update-item-by-id?id=${id}`,

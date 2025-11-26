@@ -19,10 +19,10 @@ export default async (req, context) => {
       });
     }
 
-    const { product_name, category_id, supplier_id, price, quantity } = body;
+    const { product_name, category_id, supplier_id, price, quantity_in_stock } = body;
 
             // Validate input
-    if (!product_name || !category_id || !supplier_id || !price || !quantity) {
+    if (!product_name || !category_id || !supplier_id || !price || !quantity_in_stock) {
       return new Response(
         JSON.stringify({ error: 'Required fields missing' }),
         { status: 400, headers: { 'Content-Type': 'application/json' } }
@@ -33,7 +33,7 @@ export default async (req, context) => {
 
     // Insert with parameterized query
     const result = await sql`INSERT INTO Products (product_name, category_id, supplier_id, price, quantity_in_stock) 
-                              VALUES (${product_name}, ${category_id}, ${supplier_id}, ${price}, ${quantity}) RETURNING *;`;
+                              VALUES (${product_name}, ${category_id}, ${supplier_id}, ${price}, ${quantity_in_stock}) RETURNING *;`;
 
     return new Response(JSON.stringify(result[0]), {
       status: 201,

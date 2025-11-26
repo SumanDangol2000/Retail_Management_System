@@ -22,21 +22,34 @@ export default async (req, context) => {
       );
     }
 
-    // Parse JSON body
-    const { category_name, description } = await req.json();
+    // SAFE JSON PARSING
+    let body = {};
+    try {
+      body = await req.json();
+    } catch (err) {
+      console.error("JSON PARSE ERROR:", err);
+      return new Response(JSON.stringify({ error: "Invalid JSON" }), {
+        status: 400,
+        headers: { "Content-Type": "application/json" }
+      });
+    }
 
-    // Validate required field
-    if (!category_name || category_name.trim() === "") {
+    const { supplier_name, contact_person, phone, email, address } = body;
+
+            // Validate input
+    if (!supplier_name || !contact_person || !phone || !email || !address) {
       return new Response(
-        JSON.stringify({ error: "Required parameters are missing" }),
-        { status: 400, headers: { "Content-Type": "application/json" } }
+        JSON.stringify({ error: 'Required fields missing' }),
+        { status: 400, headers: { 'Content-Type': 'application/json' } }
       );
     }
 
     const sql = neon(process.env.DATABASE_URL);
 
     // Parameterized query (prevents SQL injection)
-    const result = await sql`UPDATE Categories SET category_name = ${category_name}, description = ${description} WHERE category_id = ${id} RETURNING *;`;
+    const result = await sql`UPDATE Suppliers 
+                             SET supplier_name = ${supplier_name}, contact_person = ${contact_person}, phone = ${phone}, email = ${email}, address = ${address} 
+                             WHERE supplier_id = ${id} RETURNING *;`;
 
     // return new Response(JSON.stringify(result[0] || {}), {
     //   status: result.length > 0 ? 200 : 404,

@@ -23,8 +23,8 @@ export default async (req, context) => {
 
     // Use RETURNING * so we can detect success
     const result = await sql`
-      DELETE FROM Categories
-      WHERE category_id = ${id}
+      DELETE FROM Customers
+      WHERE customer_id = ${id}
       RETURNING *;
     `;
 

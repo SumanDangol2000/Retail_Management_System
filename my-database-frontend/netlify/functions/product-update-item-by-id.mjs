@@ -34,12 +34,12 @@ export default async (req, context) => {
       });
     }
 
-    const { product_name, category_id, supplier_id, price, quantity } = body;
+    const { product_name, category_id, supplier_id, price, quantity_in_stock } = body;
 
             // Validate input
-    if (!product_name || !category_id || !supplier_id || !price || !quantity) {
+    if (!product_name || !category_id || !supplier_id || !price || !quantity_in_stock) {
       return new Response(
-        JSON.stringify({ error: 'Required fields missing' }),
+        JSON.stringify({ error: 'Required parameters are missing' }),
         { status: 400, headers: { 'Content-Type': 'application/json' } }
       );
     }
@@ -48,7 +48,7 @@ export default async (req, context) => {
 
     // Parameterized query (prevents SQL injection)
     const result = await sql`UPDATE Products 
-                             SET product_name = ${product_name}, category_id = ${category_id}, supplier_id = ${supplier_id}, price = ${price}, quantity_in_stock = ${quantity} 
+                             SET product_name = ${product_name}, category_id = ${category_id}, supplier_id = ${supplier_id}, price = ${price}, quantity_in_stock = ${quantity_in_stock} 
                              WHERE product_id = ${id} RETURNING *;`;
 
     // return new Response(JSON.stringify(result[0] || {}), {

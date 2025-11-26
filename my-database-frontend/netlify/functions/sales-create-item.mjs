@@ -23,7 +23,7 @@ export default async (req, context) => {
 
     const { customer_id, product_id, quantity_sold, total_amount } = body;
 
-    if (!customer_id || !product_id || !quantity_sold || !sale_date || !total_amount) {
+    if (!customer_id || !product_id || !quantity_sold || !total_amount) {
       return new Response(
         JSON.stringify({ error: "Category name is required" }),
         { status: 400, headers: { "Content-Type": "application/json" } }
@@ -33,7 +33,7 @@ export default async (req, context) => {
     const sql = neon(process.env.DATABASE_URL);
 
     const result = await sql`
-      INSERT INTO Sales (customer_id, product_id, quantity_sold, sale_date, total_amount )
+      INSERT INTO Sales (customer_id, product_id, quantity_sold, total_amount )
       VALUES (${customer_id}, ${product_id}, ${quantity_sold}, ${total_amount})
       RETURNING *;
     `;
