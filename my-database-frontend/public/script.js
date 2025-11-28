@@ -34,17 +34,24 @@ document.addEventListener("DOMContentLoaded", () => {
     loadData("/.netlify/functions/product-get-availabe-product", "available_product_record", "available_product", false);
     loadData("/.netlify/functions/sales-get-items", "sales_record", "sales");
     loadData("/.netlify/functions/suppliers-get-items", "suppliers_record", "suppliers");
+    loadDashboardData()
+
+});
+
+window.initHome = function() {
+  loadDashboardData();
+};
 
 
+function loadDashboardData(){
     loadDataCount("/.netlify/functions/customer-get-item-count", "totalCustomers");
     loadDataCount("/.netlify/functions/suppliers-get-item-count", "totalSuppliers");
 
     loadDataCount("/.netlify/functions/sales-get-previous-sales", "lastMonthSales");
     loadDataCount("/.netlify/functions/sales-get-current-sales", "thisMonthSales");
-
+    loadDataCount("/.netlify/functions/sales-get-todays-sales", "todaySales");
     loadSalesChart();
-});
-
+}
 
 async function loadSalesChart() {
   const response = await fetch('/.netlify/functions/sales-get-sales-chart');

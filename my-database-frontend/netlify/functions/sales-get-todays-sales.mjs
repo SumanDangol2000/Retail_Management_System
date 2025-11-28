@@ -7,13 +7,12 @@ export default async (req, context) => {
     const sql = neon(process.env.DATABASE_URL);
 
     // Replace with YOUR table name
-const result = await sql`SELECT SUM(total_amount) AS total_previous_month
-                        FROM Sales
-                        WHERE sale_date >= date_trunc('month', CURRENT_DATE - INTERVAL '1 month')
-                          AND sale_date < date_trunc('month', CURRENT_DATE);
-                    `;
+    const result = await sql`SELECT SUM(total_amount) AS total_todays_sales
+                              FROM Sales
+                              WHERE sale_date::date = CURRENT_DATE;
+                          `;
 
-    return new Response(JSON.stringify(result[0].total_previous_month ?? 0), {
+    return new Response(JSON.stringify(result[0].total_todays_sales ?? 0), {
       status: 200,
       headers: { 'Content-Type': 'application/json' }
     });
