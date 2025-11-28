@@ -189,6 +189,25 @@
         <h2>Product Records</h2>
 
         <div id="sales_controls" class="table-controls"></div>
+        <div id="sales_sort">
+          <div id="sales_dateRange">
+            <label for="dateRange">Filter by:</label>
+            <select id="dateRange">
+              <option value="all" selected>All</option>
+              <option value="1w">Last 1 Week</option>
+              <option value="1m">Last 1 Month</option>
+              <option value="3m">Last 3 Months</option>
+            </select>
+          </div>
+
+          <div id="sales_order">
+            <label for="order">Order by:</label>
+            <select id="order">
+              <option value="DESC" selected>DESC</option>
+              <option value="ASC">ASC</option>
+            </select>
+          </div>
+        </div>
         <div id="sales_record">View and record sales.</div>
         <div id="sales_pagination" class="pagination"></div>
       </div>

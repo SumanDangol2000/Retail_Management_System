@@ -6,7 +6,7 @@ export default async (req, context) => {
     const sql = neon(process.env.DATABASE_URL);
 
     // Replace with YOUR table name
-    const result = await sql`SELECT * FROM Customers ORDER BY customer_id`;
+    const result = await sql`SELECT customer_id, first_name || ' ' || last_name as customer_name, contact_number, email, address FROM Customers ORDER BY customer_name`;
 
     return new Response(JSON.stringify(result), {
       status: 200,

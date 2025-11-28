@@ -9,9 +9,9 @@ export default async (req, context) => {
     // const result = await sql`SELECT * FROM products`;
     const result = await sql`SELECT p.product_id, p.product_name, c.category_name, s.supplier_name , p.price, p.quantity_in_stock 
                               FROM Products AS p 
-                              JOIN Categories AS c ON p.category_id = c.category_id 
-                              JOIN Suppliers AS s ON p.supplier_id = s.supplier_id 
-                              ORDER BY p.product_id ASC `;
+                              LEFT JOIN Categories AS c ON p.category_id = c.category_id 
+                              LEFT JOIN Suppliers AS s ON p.supplier_id = s.supplier_id 
+                              ORDER BY c.category_name, p.product_name ASC `;
 
     return new Response(JSON.stringify(result), {
       status: 200,

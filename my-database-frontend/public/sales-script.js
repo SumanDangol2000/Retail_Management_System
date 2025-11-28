@@ -9,7 +9,7 @@ document.addEventListener("DOMContentLoaded", function () {
       data.forEach(customer => {
         let option = document.createElement("option");
         option.value = customer.customer_id; 
-        option.textContent = customer.first_name + " " + customer.last_name;
+        option.textContent = customer.customer_name;
         categorySelect.appendChild(option);
       });
     });
@@ -66,4 +66,29 @@ document.addEventListener("DOMContentLoaded", function () {
 
   });
 
+ // Handle date range filter
+  const dateRangeSelect = document.getElementById("dateRange");
+  const orderSelect = document.getElementById("order");
+
+  async function fetchSalesByRange(range, order) {
+    const endpoint = `/.netlify/functions/sales-get-filter-items?range=${encodeURIComponent(range)}&order=${encodeURIComponent(order)}`;
+    loadData(endpoint, "sales_record", "sales");
+  }
+
+  // Listener for date range dropdown
+  dateRangeSelect.addEventListener("change", (e) => {
+    const selectedRange = e.target.value;
+    const selectedOrder = orderSelect.value;
+    fetchSalesByRange(selectedRange, selectedOrder);
+  });
+
+  // Listener for order dropdown
+  orderSelect.addEventListener("change", (e) => {
+    const selectedOrder = e.target.value;
+    const selectedRange = dateRangeSelect.value;
+    fetchSalesByRange(selectedRange, selectedOrder);
+  });
+
 });
+
+

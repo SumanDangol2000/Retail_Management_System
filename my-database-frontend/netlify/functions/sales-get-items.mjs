@@ -11,7 +11,7 @@ export default async (req, context) => {
                               FROM sales AS s
                               JOIN Customers AS c ON c.customer_id = s.customer_id
                               JOIN Products AS p ON p.product_id = s.product_id
-                              ORDER BY s.sale_id`;
+                              ORDER BY s.sale_date DESC`;
 
     return new Response(JSON.stringify(result), {
       status: 200,

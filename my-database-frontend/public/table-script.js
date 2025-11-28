@@ -5,14 +5,6 @@ import { loadData, showMessage } from "./script.js";
 // Global table UI states
 const tableStates = new Map();
 
-/**
- * createTableFromJSON()
- * - jsonData: array of objects (or 1 object)
- * - containerId: the div where table goes (ex: "products_record")
- * - tableName: name used for state & API calls
- * - isActionRequired: boolean (whether to show Edit/Delete)
- * - idField: optional primary key (auto-detected if not provided)
- */
 export function createTableFromJSON(jsonData, containerId, tableName, isActionRequired = true, idField = null) {
     if (!Array.isArray(jsonData)) jsonData = [jsonData];
 
@@ -170,7 +162,7 @@ function renderTable(containerId, tableName) {
     const start = (state.currentPage - 1) * perPage;
     const pageData = state.filteredData.slice(start, start + perPage);
 
-    const headers = Object.keys(pageData[0]);
+    const headers = Object.keys(pageData[0]).filter(h => !/id$/i.test(h));
 
     const table = document.createElement("table");
     table.style.width = "100%";
