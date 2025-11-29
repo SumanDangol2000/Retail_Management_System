@@ -63,8 +63,19 @@ document.addEventListener("DOMContentLoaded", function () {
     .catch(err => {
         console.error("Error:", err);
         showMessage("Error adding record. Please check the connection!", "error");
-    });
+    }); 
 
   });
+
+
+  document.getElementById("productSearchBox").addEventListener("input", async (e) => {
+    loadData(
+      `/.netlify/functions/product-get-filter-items?keyword=${encodeURIComponent(e.target.value)}`,
+      "product_record",
+      "product"
+    );
+  });
+
+  
 
 });
