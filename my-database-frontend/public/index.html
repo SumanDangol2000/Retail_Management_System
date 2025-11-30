@@ -55,22 +55,29 @@
         <div class="dashboard-content">
           <div>
             <h3>Available Products</h3>
-            <div id="available_product_controls" class="table-controls"></div>
+           <!-- <div id="available_product_controls" class="table-controls"></div> -->
             <div id="available_product_record">Loading products...</div>
             <div id="available_product_pagination" class="pagination"></div>
           </div>
 
           <div>
-            <h3>Monthly Product Sales</h3>
+            <!--<div id="available_product_controls" class="table-controls"></div> -->
+            <h3>Sales Summary</h3>
+            <div id="sales_summary_record"></div>
+          </div>
+
+        </div>
+
+        <div>
+            <h3>Monthly Product Sales Chart</h3>
             <canvas id="salesChart"></canvas>
           </div>
-        </div>
       </div>
 
 
     <!-- Customer container -->
       <div id="customer" class="content">
-        <h2>Customer Records</h2>
+        <h2>Customer Page</h2>
 
         <form id="customerForm">
           <label style="font-weight: bold">First Name:</label><br />
@@ -93,7 +100,7 @@
 
         <hr style="margin: 20px 0; border: 0; height: 1px; background-color: #ddd" />
 
-        <h2>Category Records</h2>
+        <h2>Customer Records</h2>
 
         <div id="customer_controls" class="table-controls"></div>
         <div id="customer_record">Manage your customers here.</div>
@@ -189,7 +196,7 @@
 
         <hr style="margin: 20px 0; border: 0; height: 1px; background-color: #ddd" />
 
-        <h2>Product Records</h2>
+        <h2>Sale Records</h2>
 
         <div id="sales_controls" class="table-controls"></div>
         <div id="sales_sort">
@@ -218,7 +225,7 @@
 
     <!-- Suppliers container -->
       <div id="suppliers" class="content">
-        <h2>Supplier Page</h2>
+        <h2>Suppliers Page</h2>
 
         <form id="suppliersForm">
           <label style="font-weight: bold">Supplier Name:</label><br />

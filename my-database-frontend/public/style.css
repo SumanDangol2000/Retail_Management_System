@@ -190,12 +190,15 @@ select option {
   font-size: 14px;
 }
 
-#sales_sort {
-  width: 30%;              /* set width */
-  display: flex;           /* make children horizontal */
-  justify-content: flex-end; /* push content to the right inside the div */
-  align-items: center;     /* vertically center label and select */
-  margin-left: auto;       /* push the whole div to the right */
+#sales_sort {          
+  display: flex;           
+  justify-content: flex-end; 
+  align-items: center;    
+  margin-left: auto;       
+}
+
+#sales_dateRange{
+  margin-right: 10px;
 }
 
 #sales_sort label {

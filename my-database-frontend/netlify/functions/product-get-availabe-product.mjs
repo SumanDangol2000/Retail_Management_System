@@ -8,9 +8,10 @@ export default async (req, context) => {
     // Replace with YOUR table name
     const result = await sql`
                             SELECT 
-                              product_name AS "Product Name",
-                              quantity_in_stock AS "Quantity In Stock"
+                              product_name,
+                              quantity_in_stock
                             FROM products
+                            ORDER BY quantity_in_stock
                             `;
 
     return new Response(JSON.stringify(result), {

@@ -26,7 +26,7 @@ document.getElementById("customerForm").addEventListener("submit", function (e) 
         return;
       }
 
-      showMessage("Product added successfully!", "success");
+      showMessage("Customer added successfully!", "success");
       loadData("/.netlify/functions/customer-get-items", "customer_record", "customer");
 
       // return data;

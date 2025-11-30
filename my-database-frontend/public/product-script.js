@@ -2,30 +2,11 @@ import { loadData, showMessage } from "./script.js";
 
 document.addEventListener("DOMContentLoaded", function () {
   // Load categories
-  fetch("/.netlify/functions/category-get-items")
-    .then(response => response.json())
-    .then(data => {
-      const categorySelect = document.getElementById("product_category");
-      data.forEach(category => {
-        let option = document.createElement("option");
-        option.value = category.category_id; 
-        option.textContent = category.category_name;
-        categorySelect.appendChild(option);
-      });
-    });
+    loadCategories();
 
   // Load suppliers
-  fetch("/.netlify/functions/suppliers-get-items")
-    .then(response => response.json())
-    .then(data => {
-      const supplierSelect = document.getElementById("product_supplier");
-      data.forEach(supplier => {
-        let option = document.createElement("option");
-        option.value = supplier.supplier_id;
-        option.textContent = supplier.supplier_name;
-        supplierSelect.appendChild(option);
-      });
-    });
+    loadSuppliers();
+
 
   // Handle form submission
   document.getElementById("productForm").addEventListener("submit", function (e) {
@@ -76,6 +57,41 @@ document.addEventListener("DOMContentLoaded", function () {
     );
   });
 
-  
 
 });
+
+  window.initProduct = function(){
+    loadCategories();
+    loadSuppliers();
+    loadData("/.netlify/functions/product-get-items", "product_record", "product");
+  }
+
+function loadCategories(){
+    fetch("/.netlify/functions/category-get-items")
+    .then(response => response.json())
+    .then(data => {
+      const categorySelect = document.getElementById("product_category");
+      categorySelect.innerHTML = "";
+      data.forEach(category => {
+        let option = document.createElement("option");
+        option.value = category.category_id; 
+        option.textContent = category.category_name;
+        categorySelect.appendChild(option);
+      });
+    });
+}
+
+function loadSuppliers(){
+    fetch("/.netlify/functions/suppliers-get-items")
+    .then(response => response.json())
+    .then(data => {
+      const supplierSelect = document.getElementById("product_supplier");
+      supplierSelect.innerHTML = "";
+      data.forEach(supplier => {
+        let option = document.createElement("option");
+        option.value = supplier.supplier_id;
+        option.textContent = supplier.supplier_name;
+        supplierSelect.appendChild(option);
+      });
+    });
+}

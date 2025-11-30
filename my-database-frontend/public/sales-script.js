@@ -2,30 +2,10 @@ import { loadData, showMessage } from "./script.js";
 
 document.addEventListener("DOMContentLoaded", function () {
   // Load customer
-  fetch("/.netlify/functions/customer-get-items")
-    .then(response => response.json())
-    .then(data => {
-      const categorySelect = document.getElementById("sales_customer");
-      data.forEach(customer => {
-        let option = document.createElement("option");
-        option.value = customer.customer_id; 
-        option.textContent = customer.customer_name;
-        categorySelect.appendChild(option);
-      });
-    });
+    loadCustomer();
 
   // Load product
-  fetch("/.netlify/functions/product-get-items")
-    .then(response => response.json())
-    .then(data => {
-      const supplierSelect = document.getElementById("sales_product");
-      data.forEach(product => {
-        let option = document.createElement("option");
-        option.value = product.product_id;
-        option.textContent = product.product_name;
-        supplierSelect.appendChild(option);
-      });
-    });
+    loadProduct();
 
   // Handle form submission
   document.getElementById("salesForm").addEventListener("submit", function (e) {
@@ -54,7 +34,7 @@ document.addEventListener("DOMContentLoaded", function () {
             return;
         }
 
-        showMessage("Record added successfully!", "success");
+        showMessage("Sales added successfully!", "success");
         loadData("/.netlify/functions/sales-get-items", "sales_record", "sales");
 
         // return data;
@@ -91,4 +71,41 @@ document.addEventListener("DOMContentLoaded", function () {
 
 });
 
+window.initSales = function(){
+  loadCustomer();
+  loadProduct();
+  loadData("/.netlify/functions/product-get-items", "product_record", "product");
+}
+
+function loadCustomer(){
+  fetch("/.netlify/functions/customer-get-items")
+    .then(response => response.json())
+    .then(data => {
+      const categorySelect = document.getElementById("sales_customer");
+      categorySelect.innerHTML = "";
+      data.forEach(customer => {
+        let option = document.createElement("option");
+        option.value = customer.customer_id; 
+        option.textContent = customer.customer_name;
+        categorySelect.appendChild(option);
+      });
+    });
+
+}
+
+
+function loadProduct(){
+    fetch("/.netlify/functions/product-get-items")
+    .then(response => response.json())
+    .then(data => {
+      const supplierSelect = document.getElementById("sales_product");
+      supplierSelect.innerHTML = "";
+      data.forEach(product => {
+        let option = document.createElement("option");
+        option.value = product.product_id;
+        option.textContent = product.product_name;
+        supplierSelect.appendChild(option);
+      });
+    });
+}
 

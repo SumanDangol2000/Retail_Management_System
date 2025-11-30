@@ -27,7 +27,7 @@ document.getElementById("suppliersForm").addEventListener("submit", function (e)
         return;
       }
 
-      showMessage("Product added successfully!", "success");
+      showMessage("Supplier added successfully!", "success");
       loadData("/.netlify/functions/suppliers-get-items", "suppliers_record", "suppliers");
 
       // return data;

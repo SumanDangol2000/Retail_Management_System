@@ -31,8 +31,9 @@ document.addEventListener("DOMContentLoaded", () => {
     loadData("/.netlify/functions/customer-get-items", "customer_record", "customer");
     loadData("/.netlify/functions/category-get-items", "category_record", "category");
     loadData("/.netlify/functions/product-get-items", "product_record", "product");
-    loadData("/.netlify/functions/product-get-availabe-product", "available_product_record", "available_product", false);
+    
     loadData("/.netlify/functions/sales-get-items", "sales_record", "sales");
+    
     loadData("/.netlify/functions/suppliers-get-items", "suppliers_record", "suppliers");
     loadDashboardData()
 
@@ -44,12 +45,16 @@ window.initHome = function() {
 
 
 function loadDashboardData(){
+    loadData("/.netlify/functions/product-get-availabe-product", "available_product_record", "available_product", false);
+loadData("/.netlify/functions/sales-get-sales-summary", "sales_summary_record", "sales_summary", false);
+
     loadDataCount("/.netlify/functions/customer-get-item-count", "totalCustomers");
     loadDataCount("/.netlify/functions/suppliers-get-item-count", "totalSuppliers");
 
     loadDataCount("/.netlify/functions/sales-get-previous-sales", "lastMonthSales");
     loadDataCount("/.netlify/functions/sales-get-current-sales", "thisMonthSales");
     loadDataCount("/.netlify/functions/sales-get-todays-sales", "todaySales");
+
     loadSalesChart();
 }
 
