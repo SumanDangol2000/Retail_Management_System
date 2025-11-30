@@ -46,7 +46,7 @@ window.initHome = function() {
 
 function loadDashboardData(){
     loadData("/.netlify/functions/product-get-availabe-product", "available_product_record", "available_product", false);
-loadData("/.netlify/functions/sales-get-sales-summary", "sales_summary_record", "sales_summary", false);
+    loadData("/.netlify/functions/product-sales-summary", "sales_summary_record", "sales_summary", false);
 
     loadDataCount("/.netlify/functions/customer-get-item-count", "totalCustomers");
     loadDataCount("/.netlify/functions/suppliers-get-item-count", "totalSuppliers");

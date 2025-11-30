@@ -12,6 +12,7 @@ export default async (req, context) => {
         SUM(s.quantity_sold) AS total_sold
       FROM Sales s
       JOIN Products p ON s.product_id = p.product_id
+      WHERE s.sale_date >= (CURRENT_DATE - INTERVAL '3 months')
       GROUP BY p.product_name, sale_month
       ORDER BY sale_month, p.product_name;
     `;

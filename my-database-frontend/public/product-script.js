@@ -57,6 +57,10 @@ document.addEventListener("DOMContentLoaded", function () {
     );
   });
 
+  document.getElementById("productSalesFilter").addEventListener("change", async (e) => {
+      loadData(`/.netlify/functions/product-sales-summary?filterType=${encodeURIComponent(e.target.value)}`, "sales_summary_record", "sales_summary", false);
+  });
+
 
 });
 

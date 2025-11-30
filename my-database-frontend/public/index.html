@@ -62,14 +62,22 @@
 
           <div>
             <!--<div id="available_product_controls" class="table-controls"></div> -->
-            <h3>Sales Summary</h3>
+            <h3>Product Sales Summary</h3>
+              <label>Filter By Product Sold : </label>
+              <select id="productSalesFilter">
+                <option value="all" selected>All</option>
+                <option value="greater">Sold > Average</option>
+                <option value="less">Sold < Average</option>
+                <option value="none">None</option>
+              </select>
             <div id="sales_summary_record"></div>
+            <div id="sales_summary_pagination" class="pagination"></div>
           </div>
 
         </div>
 
         <div>
-            <h3>Monthly Product Sales Chart</h3>
+            <h3>Last Three Months Product Sales Chart</h3>
             <canvas id="salesChart"></canvas>
           </div>
       </div>
