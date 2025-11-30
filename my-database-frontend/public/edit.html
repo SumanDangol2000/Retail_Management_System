@@ -148,7 +148,7 @@
               data.forEach(customer => {
                 let option = document.createElement("option");
                 option.value = customer.customer_id; 
-                option.textContent = customer.first_name + " " + customer.last_name;
+                option.textContent = customer.customer_name;
                 if(customer.customer_id === record.customer_id){
                   option.selected = true;
                 }

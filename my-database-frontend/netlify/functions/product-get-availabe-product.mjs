@@ -9,8 +9,9 @@ export default async (req, context) => {
     const result = await sql`
                             SELECT 
                               product_name,
-                              quantity_in_stock
-                            FROM products
+                              quantity_in_stock,
+                              stock_status
+                            FROM LowStockReport
                             ORDER BY quantity_in_stock
                             `;
 
