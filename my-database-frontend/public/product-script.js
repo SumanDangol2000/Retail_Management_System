@@ -1,5 +1,9 @@
 import { loadData, showMessage } from "./script.js";
 
+  let currentPage = 1;
+  const pageSize = 5;
+  let currentFilter = "all";
+
 document.addEventListener("DOMContentLoaded", function () {
   // Load categories
     loadCategories();
@@ -57,12 +61,42 @@ document.addEventListener("DOMContentLoaded", function () {
     );
   });
 
-  document.getElementById("productSalesFilter").addEventListener("change", async (e) => {
-      loadData(`/.netlify/functions/product-sales-summary?filterType=${encodeURIComponent(e.target.value)}`, "sales_summary_record", "sales_summary", false);
+  
+
+  document.getElementById("productSalesFilter").addEventListener("change", (e) => {
+    currentFilter = e.target.value; 
+    currentPage = 1;                 
+    loadProductSalesFilteredData();
+  });
+
+  document.getElementById("prevPage").addEventListener("click", () => {
+    if (currentPage > 1) {
+      currentPage--;
+      loadProductSalesFilteredData();
+    }
+  });
+
+  document.getElementById("nextPage").addEventListener("click", () => {
+    currentPage++;
+    loadProductSalesFilteredData();
   });
 
 
 });
+
+
+  export function loadProductSalesFilteredData() {
+    // use currentFilter instead of e.target.value
+      loadData(
+        `/.netlify/functions/product-sales-summary?filterType=${encodeURIComponent(currentFilter)}&page=${encodeURIComponent(currentPage)}&pageSize=${encodeURIComponent(pageSize)}`,
+        "sales_summary_record",
+        "sales_summary",
+        false
+    );
+
+    // update page info
+    document.getElementById("pageInfo").textContent = `${currentPage}`;
+  }
 
   window.initProduct = function(){
     loadCategories();

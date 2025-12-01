@@ -71,7 +71,14 @@
                 <option value="none">None</option>
               </select>
             <div id="sales_summary_record"></div>
-            <div id="sales_summary_pagination" class="pagination"></div>
+            <!--<div id="sales_summary_pagination" class="pagination"></div> -->
+             <!-- Pagination Controls -->
+            <div id="pagination" class="pagination-controls">
+              <button id="prevPage">Previous</button>
+              <span id="pageInfo">1</span>
+              <button id="nextPage">Next</button>
+            </div>
+
           </div>
 
         </div>
@@ -209,7 +216,7 @@
         <div id="sales_controls" class="table-controls"></div>
         <div id="sales_sort">
           <div id="sales_dateRange">
-            <label for="dateRange">Filter by:</label>
+            <label for="dateRange">Filter by sales date:</label>
             <select id="dateRange">
               <option value="all" selected>All</option>
               <option value="1w">Last 1 Week</option>
@@ -219,7 +226,7 @@
           </div>
 
           <div id="sales_order">
-            <label for="order">Order by:</label>
+            <label for="order">Order by sales date:</label>
             <select id="order">
               <option value="DESC" selected>DESC</option>
               <option value="ASC">ASC</option>
